@@ -686,6 +686,32 @@ nav.navbar .menu-btn span {
   -webkit-transition: all 0.3s cubic-bezier(0.81, -0.33, 0.345, 1.375);
   transition: all 0.3s cubic-bezier(0.81, -0.33, 0.345, 1.375);
 }
+.btng {
+  background: #a734d9;
+  background-image: -webkit-linear-gradient(top, #a734d9, #2980b9);
+  background-image: -moz-linear-gradient(top, #a734d9, #2980b9);
+  background-image: -ms-linear-gradient(top, #a734d9, #2980b9);
+  background-image: -o-linear-gradient(top, #a734d9, #2980b9);
+  background-image: linear-gradient(to bottom, #a734d9, #2980b9);
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  font-family: Georgia;
+  color: #ffffff;
+  font-size: 30px;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+}
+
+.btng:hover {
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
 
 nav.navbar .menu-btn span:nth-of-type(2) {
   position: relative;
@@ -3407,3 +3433,4 @@ a > code {
     margin-left: 15px;
   }
 }
+

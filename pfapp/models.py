@@ -8,3 +8,7 @@ class Users(models.Model):
 	correo= models.EmailField(max_length= 100, unique=True)
 	contrasena= models.CharField(max_length=32)
 	
+class Groups(models.Model):
+	nombregrupo=models.CharField(max_length=80)
+	fecha=models.DateTimeField(auto_now_add=True)
+	hora=models.DateTimeField(auto_now_add=True)

@@ -1692,6 +1692,13 @@ button, input[type='submit'] {
   font-weight: 300 !important;
 }
 
+button, input[type='newg'] {
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 100 !important;
+}
+
+
 .input-group .dropdown-toggle {
   background: #f5f5f5;
   color: #777;
@@ -3407,3 +3414,4 @@ a > code {
     margin-left: 15px;
   }
 }
+

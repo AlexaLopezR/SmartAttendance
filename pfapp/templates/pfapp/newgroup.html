@@ -70,46 +70,37 @@
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
           <ul class="list-unstyled">
-                    <li class="active"><a href="/profile/"> <i class="far fa-user"></i>Perfil</a></li>
-                    <li ><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
-                                        
+                    <li><a href="/profile/"> <i class="fas fa-user"></i>Perfil</a></li>    
+                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
           </ul>
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom">Perfil de usuario</h2>
+              <h2 class="no-margin-bottom">Grupos</h2>
             </div>
           </header>
-        
-        <div class="container">
-          <table class="table" width="100%" border="0" cellpadding="0" cellspacing="0">
-          <thead>
-      
-            <tr>
-              <th align="center"><STRONG>Nombre Completo</STRONG></th>
-              <th align="center"><STRONG>Correo</STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for x in perfilusuario %}
-            <tr class="info">
-              <td>{{ x.nombre }}</td>
-              <td>{{ x.correo }}</td>
-              <td align="enter"> <a href="/edit/"> <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Editar</button></a></td>
+
+          <!-- Group section-->
+          <br> 
+              
+           <div class="container-fluid">
+              <div class="row">
+                   <div class="form-group">
+                      <form method="post" enctype="multipart/form-data">
+                        <div class="form-group" align="center-justify"  >
+                          {% csrf_token %}
+                          {{ form.as_p }}
+
+                        <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Agregar</button>
+                        </div>
+                      </form> 
+                    </div>
+              </div>
+            </div>
 
 
-                   
-            </tr>
-          {% endfor %}
-      
-           </tbody>
-          </table>
-        </div>
-          
           <!-- Page Footer-->
           <footer class="main-footer">
             <div class="container-fluid">
@@ -138,3 +129,4 @@
     <script src="{% static 'js/front.js' %}"></script>
   </body>
 </html>
+

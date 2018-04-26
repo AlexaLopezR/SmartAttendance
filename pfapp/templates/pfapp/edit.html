@@ -70,8 +70,8 @@
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
           <ul class="list-unstyled">
-                    <li class="active"><a href="/profile/"> <i class="far fa-user"></i>Perfil</a></li>
-                    <li ><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
+                    <li class="active"><a href="/profile/"> <i class="fas fa-user"></i>Perfil</a></li>
+                    <li><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
                                         
           </ul>
         </nav>
@@ -79,35 +79,20 @@
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom">Perfil de usuario</h2>
+              <h2 class="no-margin-bottom">Editar Perfil</h2>
             </div>
           </header>
         
         <div class="container">
-          <table class="table" width="100%" border="0" cellpadding="0" cellspacing="0">
-          <thead>
-      
-            <tr>
-              <th align="center"><STRONG>Nombre Completo</STRONG></th>
-              <th align="center"><STRONG>Correo</STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for x in perfilusuario %}
-            <tr class="info">
-              <td>{{ x.nombre }}</td>
-              <td>{{ x.correo }}</td>
-              <td align="enter"> <a href="/edit/"> <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Editar</button></a></td>
+          <form method="post" enctype="multipart/form-data">
+            <div class="form-group" align="center-justify"  >
+              {% csrf_token %}
+              {{ form.as_p }}
+              <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Actualizar</button>
 
+            </div>
+          </form> 
 
-                   
-            </tr>
-          {% endfor %}
-      
-           </tbody>
-          </table>
         </div>
           
           <!-- Page Footer-->

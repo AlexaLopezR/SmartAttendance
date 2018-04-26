@@ -135,6 +135,8 @@ input {
   outline: none !important;
 }
 
+
+
 .card {
   margin-bottom: 30px;
   -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.1), -1px 0 2px rgba(0, 0, 0, 0.05);
@@ -158,6 +160,7 @@ input {
 .breadcrumb-holder {
   background: #fff;
 }
+
 
 .breadcrumb {
   background: #fff;
@@ -3407,3 +3410,4 @@ a > code {
     margin-left: 15px;
   }
 }
+
