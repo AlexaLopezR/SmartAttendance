@@ -10,5 +10,4 @@ class Users(models.Model):
 	
 class Groups(models.Model):
 	nombregrupo=models.CharField(max_length=80)
-	fecha=models.DateTimeField(auto_now_add=True)
-	hora=models.DateTimeField(auto_now_add=True)
+	

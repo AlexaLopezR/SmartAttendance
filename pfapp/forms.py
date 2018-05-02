@@ -29,28 +29,32 @@ class LoginForm(forms.Form):
     widget=forms.TextInput(attrs={'class':'form-control','placeholder':'e-mail','style':'width:30%'}))
     password = forms.CharField(label='Contraseña', max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'*******','style':'width:30%'}))
 
-class EditForm(forms.ModelForm):
+class EditForm(forms.Form):
+	def __init__(self,*args,**kwargs):
+		correo = kwargs.pop('correo')
+		perfil = kwargs.pop('perfil')
+
+		super(EditForm,self).__init__(*args,**kwargs)
+		self.fields['correo'].initial = correo
+		self.fields['nombre'].initial = perfil.nombre
+		
+		
+
 	nombre= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
-                               {'class':'form-control', 'style':'width:30%'}))
+                                {'class':'form-control', 'style':'width:30%'}))
+	correo= forms.EmailField(max_length= 100, widget=forms.TextInput(attrs=
+                                {'class':'form-control', 'style':'width:30%'}))
 	contrasena= forms.CharField(label='Contraseña', max_length=32, widget=forms.PasswordInput(attrs=
 		{
-		'class':'form-control', 'placeholder':'Mínimo 6 caracteres', 'style':'width:30%'
+		'class':'form-control', 'placeholder':'Contraseña', 'style':'width:20%'
 		}))
+	
 
-	class Meta:
-		model = Users
-		fields = ('nombre', 'contrasena',)
-
+	
 class GroupForm(forms.ModelForm):
 	nombregrupo= forms.CharField(label='Identificación del grupo',max_length= 80, widget=forms.TextInput(attrs=
                                {'class':'form-control', 'style':'width:50%'}))
-	fechainicio= forms.DateField(label= 'Fecha inicio de actividad', widget=forms.DateInput(format=('%m-%d-%Y'), 
-                               attrs={'class':'form-control','style':'width:50%', 
-							   'placeholder':'m-d-a'}))
-	horainicio=forms.TimeField(label= 'Hora de inicio de actividad', widget=forms.DateInput( 
-                               attrs={'class':'form-control','style':'width:50%', 
-							   'placeholder':'hh:mm'}))
-
+	
 	class Meta:
 		model = Groups
 		fields = '__all__'

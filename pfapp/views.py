@@ -72,19 +72,19 @@ def editprofile(request):
 		print(i.nombre)
 	if request.method=='POST':
 		
-		form=EditForm(request.POST, request.FILES) 
+		form=EditForm(request.POST, request.FILES,correo=request.session['correolog'], perfil=i) 
 		correo=request.session['correolog']
 		perfil=i
 		if form.is_valid():
 			Users.objects.filter(correo=request.session['correolog'])
-			pict=Users(id=i.id, correo=form.cleaned_data['correo'],
+			pict=Users(id=i.id, correo=correo,
 			nombre=form.cleaned_data['nombre'],
 			contrasena=form.cleaned_data['contrasena'])
 			pict.save()
 			return redirect("/profile")
 
 	else:
-		form=EditForm(request.POST, request.FILES)
+		form=EditForm(correo=request.session['correolog'], perfil=i)
 		return render(request, 'pfapp/edit.html',{'form':form})
 
 
