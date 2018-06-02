@@ -88,7 +88,24 @@
               <div class="row">
                   <td align="enter"> <a href="/newgroup/"> <button style= "width: 200%; height: 300%;  padding-top: 0%; padding-right: 0%; padding-bottom: 0%; padding-left: 0%" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Agregar Grupo</button></a></td>
               </div>
-            </div>
+              <h2>Here are all user profiles: </h2>
+              <div>
+                  <ul>
+                      {% for profile in object_list %}
+                          <li>{{ profile.first_name }} {{ profile.last_name }} | <a
+                                  href="{% url 'profile-update' profile.pk %}">edit</a>
+                              <a href="{% url 'profile-delete' profile.pk %}">delete</a>
+                          </li>
+                      {% empty %}
+                          <li>No profile yet.</li>
+                      {% endfor %}
+
+                  </ul>
+                  <p>
+                      <a href="{% url 'profile-add' %}">add a profile</a>
+                  </p>
+          </div>
+                      </div>
 
 
           <!-- Page Footer-->

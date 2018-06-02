@@ -3,18 +3,28 @@ from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import UpdateView
 from django.contrib import messages
+from django.db import IntegrityError, transaction
+from django.forms.formsets import formset_factory
+from django.core.urlresolvers import reverse_lazy 
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView
 
 from .forms import UserForm 
 from .forms import LoginForm 
-from .forms import EditForm 
-from .forms import GroupForm 
+from .forms import EditForm, UploadPhotoForm
+#from .forms import GroupForm 
+from .forms import GroupMemberFormSet
+#from .forms import BaseLinkFormSet 
 
 
-from .models import Users 
+from .models import Users
+from .models import Group
+from .models import GroupMembers
+
 # Create your views here.
 
 def home(request):
 	form= LoginForm(request.POST)
+
 	if form.is_valid():
 		Email=form.cleaned_data['email']
 		Password=form.cleaned_data['password']
@@ -27,6 +37,7 @@ def home(request):
 		contra=str(contra).replace("']",'')
 		contra=str(contra).replace("[u'",'')
 		correo=str(correo).replace("[u'",'')
+		
 		if (correo==Email and Password==contra) :
 			request.session['Logged']=True
 			request.session['correolog']=Email
@@ -34,8 +45,10 @@ def home(request):
 		else:
 			temp=2
 			return render(request,'pfapp/login.html',{'message':temp, 'form':form})
+
 	else:
 		form=LoginForm()
+
 		try:
 			if (request.session['registrado']==1):
 				temp=request.session['registrado']
@@ -71,7 +84,7 @@ def editprofile(request):
 	for i in perfilusuario:
 		print(i.nombre)
 	if request.method=='POST':
-		
+	
 		form=EditForm(request.POST, request.FILES,correo=request.session['correolog'], perfil=i) 
 		correo=request.session['correolog']
 		perfil=i
@@ -88,16 +101,36 @@ def editprofile(request):
 		return render(request, 'pfapp/edit.html',{'form':form})
 
 
-def groups(request):
-	return render(request, 'pfapp/groups.html')
 
-def newgroup(request):
-	if request.method=='POST':
-		form=GroupForm(request.POST, request.FILES)
-		if form.is_valid():
-			form.save()
-			return redirect("/groups")
-	else:
-		form=GroupForm()
-		return render(request, 'pfapp/newgroup.html',{'form':form})
+class ProfileList(ListView):
+	model = Group
 	
+
+class GroupGroupMemberCreate(CreateView):
+
+    model = Group
+    fields = ['grupo']
+    success_url = reverse_lazy('profile-list')
+
+    def get_context_data(self, **kwargs):
+        data = super(GroupGroupMemberCreate, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['groupmembers'] = GroupMemberFormSet(self.request.POST, self.request.FILES)
+        else:
+            data['groupmembers'] = GroupMemberFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        
+        groupmembers = context['groupmembers']
+        with transaction.atomic():
+            self.object = form.save()
+
+            if groupmembers.is_valid():
+                groupmembers.instance = self.object
+                groupmembers.save()
+        return super(GroupGroupMemberCreate, self).form_valid(form)
+
+
+

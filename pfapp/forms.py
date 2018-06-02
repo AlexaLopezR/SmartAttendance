@@ -1,12 +1,24 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
+from django.forms.formsets import BaseFormSet
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.forms.models import modelformset_factory
+from django.forms.formsets import formset_factory
+from django.forms import inlineformset_factory
 
-from .models import Users
-from .models import Groups
+from .models import Users, UploadPhoto
+from .models import Group
+from .models import GroupMembers
 
+class UploadPhotoForm(forms.ModelForm):
+	"""docstring for ClassName"""
+	photo = forms.ImageField(label='Agregar Foto 1')
+	class Meta:
+		model = UploadPhoto
+		exclude = ()
+		
 class UserForm(forms.ModelForm):
 	nombre= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
                                 {'class':'form-control', 'style':'width:50%'}))
@@ -49,14 +61,20 @@ class EditForm(forms.Form):
 		'class':'form-control', 'placeholder':'Contraseña', 'style':'width:20%'
 		}))
 	
-
+class GroupMemberForm(forms.ModelForm):
+	nombreint= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
+                                {'class':'form-control', 'style':'width:100%'}))
+	correoint= forms.EmailField(label= 'Correo', max_length= 100, widget=forms.TextInput(attrs=
+                                {'class':'form-control',
+                                'placeholder':'example@correo.com',
+                                'style':'width:100%'}))
 	
-class GroupForm(forms.ModelForm):
-	nombregrupo= forms.CharField(label='Identificación del grupo',max_length= 80, widget=forms.TextInput(attrs=
-                               {'class':'form-control', 'style':'width:50%'}))
-	
+	foto1 = forms.ImageField(label='Agregar Foto 1')
+	foto2 = forms.ImageField(label='Agregar Foto 2')
 	class Meta:
-		model = Groups
-		fields = '__all__'
+		model = GroupMembers
+		exclude = ()
 
+GroupMemberFormSet = inlineformset_factory(Group, GroupMembers,
+                                            form=GroupMemberForm, extra=1)
 
