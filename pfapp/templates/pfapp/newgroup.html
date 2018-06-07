@@ -85,82 +85,9 @@
             </div>
           </header>
 
-          <!-- Group section
-        <form method="post">
-            {% csrf_token %}
-
-            <label>Nombre Grupo</label>
-            {{ group_form.nombreGrupo }}
-            {% if group_form.nombreGrupo.errors %}
-                {% for error in group_form.nombreGrupo.errors %}
-                    {{ error|escape }}
-                {% endfor %}
-            {% endif %}
-           
-
-            {{ member_formset.management_form }}
-
-            {% for member_form in member_formset %}
-                <div class="link-formset">
-                    <label>Nombre Integrante</label>
-                    {{ member_form.nombreint }}
-                    {% if member_form.nombreint.errors %}
-                        {% for error in member_form.nombreint.errors %}
-                            {{ error|escape }}
-                        {% endfor %}
-                    {% endif %}
-                    <label>Correo Integrante</label>
-
-                    {{ member_form.correoint }}
-                    {% if member_form.correoint.errors %}
-                        {% for error in member_form.correoint.errors %}
-                            {{ error|escape }}
-                        {% endfor %}
-                    {% endif %}
-
-                    {{ member_form.foto1 }}
-                    {% if member_form.foto1.errors %}
-                        {% for error in member_form.foto1.errors %}
-                            {{ error|escape }}
-                        {% endfor %}
-                    {% endif %}
-
-                    {{ member_form.foto2 }}
-                    {% if member_form.foto2.errors %}
-                        {% for error in member_form.foto2.errors %}
-                            {{ error|escape }}
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            {% endfor %}
-
-            {% if member_formset.non_form_errors %}
-                {% for error in member_formset.non_form_errors %}
-                    {{ error|escape }}
-                {% endfor %}
-            {% endif %}
-
-            <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Registrar</button>
-        </form>
-        <form action="" method="post" >
-          {% csrf_token %}
-          <h2> Distributors :</h2>
-          {% for field in group_form %}
-            {{ field.errors }}
-            {{ field.label_tag }} : {{ field }}
-          {% endfor %}
-
-          <h3> Product Instance(s)</h3>
-         <div class="link-formset" method="post">
-              {% for field in member_formset %}
-                {{ field.errors }}
-                {{ field.label_tag }} : {{ field }}
-              {% endfor %}
-          </div>
-
-            <input type="submit" name="submit" class="button" value="Save"/>
-        </form>-->
+         
         <div class="col-md-4">
+          <h4> {{ instance.user }} aja</h4>
           <form action="" method="post">
               {% csrf_token %}
               {{ form.as_p }}
@@ -176,6 +103,8 @@
                                   <th>{{ field.label|capfirst }}</th>
                               {% endfor %}
                           </tr>
+                          <h4>aaj</h4>
+
                           </thead>
                       {% endif %}
                       <tr class="{% cycle row1,row2 %} formset_row">

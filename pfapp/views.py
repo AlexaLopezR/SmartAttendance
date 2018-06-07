@@ -7,6 +7,10 @@ from django.db import IntegrityError, transaction
 from django.forms.formsets import formset_factory
 from django.core.urlresolvers import reverse_lazy 
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.conf import settings 
+from django.contrib.auth import get_user_model
 
 from .forms import UserForm 
 from .forms import LoginForm 
@@ -41,6 +45,7 @@ def home(request):
 		if (correo==Email and Password==contra) :
 			request.session['Logged']=True
 			request.session['correolog']=Email
+			
 			return redirect("profile/")
 		else:
 			temp=2
@@ -57,27 +62,36 @@ def home(request):
 		except:
 			return render(request,'pfapp/login.html',{'form':form})
 		return render(request, 'pfapp/login.html',{'form':form})
+
 	
-def register(request):
-	if request.method=='POST':
-		form=UserForm(request.POST, request.FILES)
-		registrado=0
-		if form.is_valid():
-			form.save()
-			registrado=1
-			request.session['registrado']=registrado
-			return redirect("/")
-	else:
-		form=UserForm()
-		return render(request, 'pfapp/register.html',{'form':form})
+#def register(request):
+#	if request.method=='POST':
+#		form=UserForm(request.POST, request.FILES)
+#		registrado=0
+#		if form.is_valid():
+#			form.save()
+#			registrado=1
+#			request.session['registrado']=registrado
+#			return redirect("/")
+#	else:
+#		form=UserForm()
+#		return render(request, 'pfapp/register.html',{'form':form})
+
+class register(CreateView):
+	"""docstring for register"""
+	model= Users
+	template_name= "pfapp/register.html"
+	form_class = UserForm
+	success_url=reverse_lazy('login')
+
 
 def logout (request):
 	request.session.flush()
 	return redirect("/")
 
 def userprofile(request):
-	perfilusuario = Users.objects.filter(correo=request.session['correolog'])
-	return render(request,'pfapp/index.html',{'perfilusuario':perfilusuario})
+	#perfilusuario = Users.objects.filter(correo=request.session['correolog'])
+	return render(request,'pfapp/index.html')
 
 def editprofile(request):
 	perfilusuario = Users.objects.filter(correo=request.session['correolog'])
@@ -105,11 +119,11 @@ def editprofile(request):
 class ProfileList(ListView):
 	model = Group
 	
-
 class GroupGroupMemberCreate(CreateView):
 
     model = Group
     fields = ['grupo']
+    
     success_url = reverse_lazy('profile-list')
 
     def get_context_data(self, **kwargs):
@@ -120,16 +134,17 @@ class GroupGroupMemberCreate(CreateView):
             data['groupmembers'] = GroupMemberFormSet()
         return data
 
+
     def form_valid(self, form):
         context = self.get_context_data()
-        
+              
         groupmembers = context['groupmembers']
         with transaction.atomic():
-            self.object = form.save()
+        	self.object = form.save()
+        	if groupmembers.is_valid():
+			    groupmembers.instance = self.object
 
-            if groupmembers.is_valid():
-                groupmembers.instance = self.object
-                groupmembers.save()
+			    groupmembers.save()
         return super(GroupGroupMemberCreate, self).form_valid(form)
 
 

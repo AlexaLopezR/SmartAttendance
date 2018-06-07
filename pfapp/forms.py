@@ -7,34 +7,45 @@ from django.contrib.auth.models import User
 from django.forms.models import modelformset_factory
 from django.forms.formsets import formset_factory
 from django.forms import inlineformset_factory
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import Users, UploadPhoto
 from .models import Group
 from .models import GroupMembers
 
 class UploadPhotoForm(forms.ModelForm):
-	"""docstring for ClassName"""
 	photo = forms.ImageField(label='Agregar Foto 1')
 	class Meta:
 		model = UploadPhoto
 		exclude = ()
 		
-class UserForm(forms.ModelForm):
-	nombre= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
-                                {'class':'form-control', 'style':'width:50%'}))
-	correo= forms.EmailField(label= 'Correo electrónico', max_length= 100, widget=forms.TextInput(attrs=
-                                {'class':'form-control',
-                                'placeholder':'ejemplo@correo.com',
-                                'style':'width:50%'}))
-	contrasena= forms.CharField(label='Contraseña', max_length=32, widget=forms.PasswordInput(attrs=
-		{
-		'class':'form-control', 'placeholder':'Mínimo 6 caracteres', 'style':'width:50%'
-		}))
+class UserForm(UserCreationForm):
+	#nombre= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
+     #                           {'class':'form-control', 'style':'width:50%'}))
+	#correo= forms.EmailField(label= 'Correo electrónico', max_length= 100, widget=forms.TextInput(attrs=
+      #                          {'class':'form-control',
+       #                         'placeholder':'ejemplo@correo.com',
+        #                        'style':'width:50%'}))
+	#contrasena= forms.CharField(label='Contraseña', max_length=32, widget=forms.PasswordInput(attrs=
+	#	{
+	#	'class':'form-control', 'placeholder':'Mínimo 6 caracteres', 'style':'width:50%'
+	#	}))
 	
 
 	class Meta:
-		model = Users
-		fields = '__all__'
+		model = User
+		fields = [ 'username',
+					'first_name',
+					'last_name',
+					'email',
+				]
+		labels={ 'username': 'Nombre de Usuario',
+					'first_name': 'Nombre',
+					'last_name': 'Apellidos',
+					'email': 'Correo electrónico',
+					'password': 'Contraseña'
+				}
 
 class LoginForm(forms.Form):
     email = forms.EmailField(label='Correo electrónico',

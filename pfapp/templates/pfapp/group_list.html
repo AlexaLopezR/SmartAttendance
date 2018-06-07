@@ -64,7 +64,7 @@
           <div class="sidebar-header d-flex align-items-center">
             <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
             <div class="title">
-              <h1 class="h4">Mark Stephen</h1>
+              <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
@@ -87,14 +87,14 @@
            <div class="container-fluid">
               <div class="row">
                 <dl>
-                  <dt align="enter"> <a href="/newgroup/"> <button style= "width: 330%; height: 300%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Agregar Grupo</button></a></dt>
-                  {% for group in object_list %}
+                  <dt align="enter"> <a href="/newgroup/"> <button style= "width: 300%; height: 300%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Agregar Grupo</button></a></dt>
+                   {% for group in object_list %}
                     <br>
                     <dt>
                        <button style= "width: 300%; height: 300%" type="submit" name="registerSubmit" class="btn btn-primary"><i class="fas fa-users"></i>{{ group.grupo }} </button>
                     </dt> 
                   {% endfor %}
-                </dl>                 
+                </dl>       
             
               </div>
             </div>
