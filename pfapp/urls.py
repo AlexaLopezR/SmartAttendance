@@ -5,16 +5,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth.views import login
-from views import register
 
 urlpatterns= [
-	#url(r'^$', views.home, name='home'),
     url(r'^profile/$',views.userprofile,name='profile'),
-    url(r'^register/$',register.as_view(),name='register'),
+    url(r'^register/$',views.register.as_view(),name='register'),
     url(r'^login/$',views.logout,name='login'),
     url(r'^edit/$',views.editprofile,name='edit'),
     url(r'^groups/$', views.ProfileList.as_view(), name='profile-list'),
     url(r'^newgroup/$',views.GroupGroupMemberCreate.as_view(),name='GroupGroupMemberCreate'),
-    url(r'^$', login, {'template_name': 'pfapp/login.html'}, name='login')
+    url(r'^$', login, {'template_name': 'pfapp/login.html'}, name='login'),
+    url(r'^edit/password/$',views.change_password,name='changepassword'),
+    url(r'^upload/$',views.GroupPhotoEntry.as_view() ,name='upload-photo'),
+    url(r'^prueba/$',views.codificacion ,name='photo'),
+    url(r'^(?P<group_grupo>[0-9]+)/$',views.GroupList, name='detail'),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

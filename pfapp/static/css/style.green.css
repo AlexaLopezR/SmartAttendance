@@ -1928,6 +1928,7 @@ select option {
 .login-page .form-holder .form .form-group {
   position: relative;
   margin-bottom: 30px;
+  display: none;
 }
 
 .login-page .form-holder .form .content {

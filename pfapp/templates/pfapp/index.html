@@ -65,7 +65,7 @@
           <div class="sidebar-header d-flex align-items-center">
             <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
             <div class="title">
-              <h1 class="h4">Mark Stephen</h1>
+              <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
@@ -88,23 +88,22 @@
           <thead>
       
             <tr>
-              <th align="center"><STRONG>Nombre Completo</STRONG></th>
+              <th align="center"><STRONG>Nombre de Usuario</STRONG></th>
               <th align="center"><STRONG>Correo</STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
+              <th align="center"><STRONG>Nombre Completo </STRONG></th>
               <th align="center"><STRONG> </STRONG></th>
             </tr>
           </thead>
           <tbody>
-            {% for x in perfilusuario %}
             <tr class="info">
-              <td>{{ x.nombre }}</td>
-              <td>{{ x.correo }}</td>
+              <td>{{ user.get_username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.first_name }} {{ user.last_name }}</td>
               <td align="enter"> <a href="/edit/"> <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Editar</button></a></td>
 
 
                    
             </tr>
-          {% endfor %}
       
            </tbody>
           </table>
