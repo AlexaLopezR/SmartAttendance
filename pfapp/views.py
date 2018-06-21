@@ -17,7 +17,7 @@ import time
 
 from .forms import UserForm 
 from .forms import LoginForm 
-from .forms import EditForm, UploadPhotoForm
+from .forms import EditForm, UploadPhotoForm, UploadPhotoForm
 from .forms import GroupMemberFormSet
 
 from .models import Users
@@ -27,14 +27,14 @@ from .models import UploadPhoto
 
 
 # Create your views here.
-
 class register(CreateView): #Vista para el registro de usuario
 	"""docstring for register"""
 	model = User
 	template_name= "pfapp/register.html"
 	form_class = UserForm
-	success_url=reverse_lazy('')
 
+	success_url=reverse_lazy('login')
+	
 
 def logout (request): #Vista para cerrar sesion
 	request.session.flush()
@@ -66,10 +66,10 @@ def change_password(request): #Vista para cambiar clave de usuario
 	else:
 		form=PasswordChangeForm(user=request.user)
 		return render(request, 'pfapp/changepassword.html',{'form':form})
-
-
 class ProfileList(ListView): #Vista para ver los grupos creados
-	model = Group
+	template_name = 'group_list.html'
+	def get_queryset(self):
+		return Group.objects.filter(user_id=self.request.user)
 	
 class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
 
@@ -96,11 +96,6 @@ class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
         		groupmembers.save()
        	return super(GroupGroupMemberCreate, self).form_valid(form)
   
-class GroupPhotoEntry(CreateView):
-	model = UploadPhoto
-	template_name= "pfapp/uploadphoto_form.html"
-	form_class = UploadPhotoForm
-	success_url=reverse_lazy('')	
 
 def codificacion(request): #Vista para obtener el vector con las caracteristicas de las personas
 	from os import listdir
@@ -125,24 +120,86 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 		cod=face_recognition.face_encodings(image)
 		cod=np.array(cod)
 		print(type(cod))
-		GroupMembers.objects.filter(id =pk[i]).update(cod1 =cod)
+		GroupMembers.objects.filter(id =pk[i]).update(cod1 =cod[0])
 	for i in range(0,len(y)):
 		image = face_recognition.load_image_file(y[i])
 		cod=face_recognition.face_encodings(image)
 		cod=np.array(cod)
 		print(type(cod))
-		GroupMembers.objects.filter(id =pk[i]).update(cod2 =cod)
+		GroupMembers.objects.filter(id =pk[i]).update(cod2 =cod[0])
 		
 
 	print("listo")
 	return redirect('profile-list')
-
+grupo_selec=0
 def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
 	query_group=GroupMembers.objects.filter(group=group_grupo)
-	print(query_group)
+	global grupo_selec
+	grupo_selec=group_grupo
 	context={
 	'query_group':query_group
 	}
 	return render(request,'pfapp/lista.html',context)
     		
+class GroupPhotoEntry(CreateView): #Vista para generar asistencia
+ 
+	model = UploadPhoto
+	template_name= "pfapp/uploadphoto_form.html"
+	form_class = UploadPhotoForm
+	success_url=reverse_lazy('attendance')
 
+def attendanceGenerator(request):
+	from os import listdir
+	import os
+	from os.path import join
+	import pickle
+	from PIL import Image, ImageFont,  ImageDraw,ImageEnhance
+	import face_recognition
+	from face_recognition import face_locations
+	from face_recognition.cli import image_files_in_folder
+	import numpy as np
+	import cv2 
+	from resizeimage import resizeimage
+	import ast
+
+	for p in UploadPhoto.objects.raw('SELECT * FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
+		dire1=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.picture))
+		unknown_image = face_recognition.load_image_file(dire1)
+		image=Image.fromarray(unknown_image)
+		enhancer_object = ImageEnhance.Contrast(image)
+		enhancer_object = ImageEnhance.Color(image)
+		out = enhancer_object.enhance(1.3)
+		out.save('/home/alexalopez/PF/SmartAttendance/static/media/imagenmejorada.jpg')
+		unknown_image = face_recognition.load_image_file('/home/alexalopez/PF/SmartAttendance/static/media/imagenmejorada.jpg')
+		height = np.size(unknown_image, 0)
+		width = np.size(unknown_image, 1)
+		if (width<2000 and height<2000):
+			unknown_image = cv2.resize(unknown_image, (2500, 2000)) 
+		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="cnn")
+		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+		pil_image = Image.fromarray(unknown_image)
+		global grupo_selec
+		print("ya")
+		A = np.array([])
+		for c in GroupMembers.objects.raw('SELECT id, cod1 FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
+		   cod=c.cod1
+		   print(cod)
+		   list_string = str(cod)
+		   cod=np.array(list_string)
+   		   print(type(cod))
+		   A = np.append(A, cod)
+		A=''.join(map(str, A)) 
+		print(A)
+		known_face_encodings=A
+		B = np.array([])
+		for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
+			name=n.nombreint
+			list_string = str(name)
+		   	name=np.array(list_string)
+			B = np.append(B, name)
+		print(B)
+
+		#known_face_names=B
+	html = "<html><body>It is now.</body></html>"
+	return HttpResponse(html)
+	

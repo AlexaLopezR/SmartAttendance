@@ -47,6 +47,7 @@
               <div class="form d-flex align-items-center">
                 <div class="content">
                   <form method="post">
+                    <small>*Si está registrado, inice sesión </small>
                     {% csrf_token %}
                     {{ form.as_p }}
                     <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Ingresar</button>
@@ -74,9 +75,6 @@
  <script >
         if ('{{message}}'==1){
             alert('Registro exitoso. Inicie sesión');
-        }else if ('{{message}}'==2){
-            alert('Información incorrecta. Ingrese nuevamente los datos');
         }
-
        
  </script>

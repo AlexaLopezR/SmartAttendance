@@ -18,6 +18,9 @@ urlpatterns= [
     url(r'^upload/$',views.GroupPhotoEntry.as_view() ,name='upload-photo'),
     url(r'^prueba/$',views.codificacion ,name='photo'),
     url(r'^(?P<group_grupo>[0-9]+)/$',views.GroupList, name='detail'),
+    url(r'^upload/$', views.GroupPhotoEntry.as_view(), name='upload-photo'),
+    url(r'^attendance/$',views.attendanceGenerator ,name='attendance'),
+
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

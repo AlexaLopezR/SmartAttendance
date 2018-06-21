@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -39,7 +38,7 @@ class GroupMembers(models.Model):
 
 
 class UploadPhoto(models.Model):
-	fotogrupo= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
+	picture= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
 
 
 

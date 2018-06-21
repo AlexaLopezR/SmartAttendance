@@ -86,8 +86,10 @@
         
             <body >
             <br>
-            <h1 align="center">{{ query_group.0.group }}</h1>
-
+            <div class="col-sm-12 text-right">
+            <h1 align="center" >{{ query_group.0.group }}</h1>
+            <a href="{% url 'upload-photo' %}" align="right">Generar Asistencia>></a>
+            </div>
             
             </body>
 
