@@ -141,14 +141,14 @@ def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
 	}
 	return render(request,'pfapp/lista.html',context)
     		
-class GroupPhotoEntry(CreateView): #Vista para generar asistencia
+class GroupPhotoEntry(CreateView): #Vista para cargar foto de asistencia
  
 	model = UploadPhoto
 	template_name= "pfapp/uploadphoto_form.html"
 	form_class = UploadPhotoForm
 	success_url=reverse_lazy('attendance')
 
-def attendanceGenerator(request):
+def attendanceGenerator(request): #Vista para generar asistencia
 	from os import listdir
 	import os
 	from os.path import join
@@ -157,11 +157,42 @@ def attendanceGenerator(request):
 	import face_recognition
 	from face_recognition import face_locations
 	from face_recognition.cli import image_files_in_folder
-	import numpy as np
 	import cv2 
 	from resizeimage import resizeimage
-	import ast
+	import numpy as np
+	import MySQLdb
+	bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+	cursor = bd.cursor()
+	global grupo_selec
 
+	cursor.execute("SELECT id,cod1, cod2 FROM pfapp_groupmembers WHERE group_id = '%s'" %grupo_selec)
+	results = cursor.fetchall()
+	A = np.array([])
+	for i in results:
+		A = np.append(A, i[1])
+		A= np.append(A, i[2])
+	A=','.join(map(str, A)) 
+	A=A.replace(' ',',')
+	A=A.replace(',,,',',')
+	A=A.replace(',,',',')
+	A=A.replace(',,',',')
+	print("Tipo de A")
+	A=eval(A)
+	A = [np.array(element) for element in A]
+ 	known_face_encodings=A
+	
+	B = np.array([])
+	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
+		name=n.nombreint
+		list_string = str(name)
+	   	name=np.array(list_string)
+		B = np.append(B, name)
+		B = np.append(B, name)
+	B=','.join(map(str, B))
+	B=B.split(',')
+	known_face_names=B
+
+	tol=0.6
 	for p in UploadPhoto.objects.raw('SELECT * FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
 		dire1=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.picture))
 		unknown_image = face_recognition.load_image_file(dire1)
@@ -178,28 +209,36 @@ def attendanceGenerator(request):
 		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="cnn")
 		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 		pil_image = Image.fromarray(unknown_image)
-		global grupo_selec
-		print("ya")
-		A = np.array([])
-		for c in GroupMembers.objects.raw('SELECT id, cod1 FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
-		   cod=c.cod1
-		   print(cod)
-		   list_string = str(cod)
-		   cod=np.array(list_string)
-   		   print(type(cod))
-		   A = np.append(A, cod)
-		A=''.join(map(str, A)) 
-		print(A)
-		known_face_encodings=A
-		B = np.array([])
-		for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
-			name=n.nombreint
-			list_string = str(name)
-		   	name=np.array(list_string)
-			B = np.append(B, name)
-		print(B)
 
-		#known_face_names=B
+		#  Create a Pillow ImageDraw Draw instance to draw with
+		draw = ImageDraw.Draw(pil_image)
+		# Loop through each face found in the unknown image
+		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+		# See if the face is a match for the known face(s)
+			matches = face_recognition.face_distance(known_face_encodings, face_encoding)
+			name = "Unknown"
+			if(min(matches)<=tol):
+				mindispos = matches.tolist().index(min(matches))
+				name = known_face_names[mindispos]
+		 # Draw a box around the face using the Pillow module
+		 	draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+
+		 # Draw a label with a name below the face
+		  	text_width, text_height = draw.textsize(name)
+		  	draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
+		  	draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
+
+
+		 # Remove the drawing library from memory as per the Pillow docs
+		del draw
+
+		 #  Display the resulting image
+		pil_image.save("resultado_salon.jpg")
+
+	
 	html = "<html><body>It is now.</body></html>"
 	return HttpResponse(html)
+	
+	
+	
 	
