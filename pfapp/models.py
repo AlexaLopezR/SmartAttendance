@@ -11,7 +11,7 @@ import numpy
 
 
 def get_image_path(instance, filename):
-    return os.path.join('pfapp/images/', str(instance.group),str(instance.nombreint), filename)
+    return os.path.join('pfapp/images/', str(instance.groupid),str(instance.nombreint), filename)
 
 class Users(models.Model):
 	nombre= models.CharField(max_length= 80)
@@ -19,14 +19,14 @@ class Users(models.Model):
 	contrasena= models.CharField(max_length=32)
 
 class Group(models.Model):
-	grupo=models.CharField(max_length=80)
+	group=models.CharField(max_length=80)
 	user=models.ForeignKey(User,on_delete=models.CASCADE)
 	def __str__(self):
-		return self.grupo
+		return self.group
 
 	
 class GroupMembers(models.Model):
-	group=models.ForeignKey(Group)
+	groupid=models.ForeignKey(Group)
 	nombreint= models.CharField(max_length= 80)
 	correoint= models.EmailField(max_length= 100, unique=True)
 	foto1= models.ImageField(upload_to=get_image_path,default='default.jpg')

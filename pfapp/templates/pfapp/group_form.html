@@ -71,17 +71,17 @@
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
-          <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
+          <!-- Sidebar Navidation Menus--><span class="heading">Menu</span>
           <ul class="list-unstyled">
-                    <li><a href="/profile/"> <i class="fas fa-user"></i>Perfil</a></li>    
-                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
+                    <li><a href="/profile/"> <i class="fas fa-user"></i>Profile</a></li>    
+                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
           </ul>
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="far fa-plus-square"></i>Agregar Grupo</h2>
+              <h2 class="no-margin-bottom"><i class="far fa-plus-square"></i>New Group</h2>
             </div>
           </header>
           <br>
@@ -120,7 +120,16 @@
                 </tr>
               {% endfor %}
             </table>
-            <input type="submit" value="Guardar"/> <a href="{% url 'profile-list' %}">Volver a grupos</a>
+            <style type="text/css">.horizontal { display: inline}</style>
+              <dl>
+              <ul>
+                <li class="horizontal"> <a href="/groups/"> < < Go Back </a></li>
+
+               <li class="horizontal"><button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Save Group</button> </li>
+              </ul>
+            </dl>
+            
+
           </form>
         </div>
               
@@ -160,8 +169,8 @@
 
 <script type="text/javascript">
         $('.formset_row').formset({
-            addText: 'Agregar estudiante',
-            deleteText: 'Eliminar',
+            addText: 'Add member',
+            deleteText: 'Delete',
             prefix: 'groupmembers_set'
         });
 </script>

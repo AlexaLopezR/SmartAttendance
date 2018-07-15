@@ -67,32 +67,41 @@
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
-          <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
+          <!-- Sidebar Navidation Menus--><span class="heading">Menu</span>
           <ul class="list-unstyled">
-                    <li><a href="/profile/"> <i class="fas fa-user"></i>Perfil</a></li>    
-                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
+                    <li><a href="/profile/"> <i class="fas fa-user"></i>Profile</a></li>    
+                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
           </ul>
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Grupos</h2>
+              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Groups</h2>
             </div>
           </header>
 
           <!-- Group section-->
-          <br> 
+          <br>
+          <div align="center">
+          <style type="text/css">.horizontal { display: inline}</style>
+            <dl>
+              <ul>
+               <li class="horizontal"> <a href="/newgroup/"> <button style= "width: 100%; height: 100%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Add group manually</button></a> </li>
+                <li class="horizontal"> <a href="/newgroupexcel/"> <button style= "width: 100%; height: 100%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Add group from file</button></a> </li>
+              </ul>
+            </dl>
+          </div> 
               
            <div class="container-fluid">
               <div class="row">
-                <dl>
-                  <dt align="enter"> <a href="/newgroup/"> <button style= "width: 300%; height: 300%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Agregar Grupo</button></a></dt>
+             
                    {% for group in object_list %}
                     <br>
                     <dt><a href="{% url 'detail' group.id %}">
-                       <button style= "width: 300%; height: 300%" type="submit" name="registerSubmit" class="btn btn-primary"><i class="fas fa-users"></i>{{ group.grupo }} </button></a>
-                    </dt> 
+                       <button style= "width: 300px; height: 100px" type="submit" name="registerSubmit" class="btn btn-primary"><i class="fas fa-users"></i>{{ group.group }} </button></a>
+                    </dt>
+                    <dt>&nbsp; &nbsp; &nbsp; </dt> 
                   {% endfor %}
                 </dl>       
             

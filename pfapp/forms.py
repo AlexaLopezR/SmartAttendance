@@ -15,7 +15,7 @@ from .models import Group
 from .models import GroupMembers
 
 class UploadPhotoForm(forms.ModelForm):
-	photo = forms.ImageField(label='Agregar Foto 1')
+	photo = forms.ImageField(label='Select Picture')
 	class Meta:
 		model = UploadPhoto
 		exclude = ()
@@ -29,17 +29,17 @@ class UserForm(UserCreationForm):
 					'last_name',
 					'email',
 				]
-		labels={ 'username': 'Nombre de Usuario',
-					'first_name': 'Nombre',
-					'last_name': 'Apellidos',
-					'email': 'Correo electrónico',
-					'password': 'Contraseña'
+		labels={ 'username': 'Username',
+					'first_name': 'First Name',
+					'last_name': 'Last Name',
+					'email': 'E-mail',
+					'password': 'Password'
 				}
 
 class LoginForm(forms.Form):
-    email = forms.EmailField(label='Correo electrónico',
+    email = forms.EmailField(label='E-mail',
     widget=forms.TextInput(attrs={'class':'form-control','placeholder':'e-mail','style':'width:30%'}))
-    password = forms.CharField(label='Contraseña', max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'*******','style':'width:30%'}))
+    password = forms.CharField(label='Password', max_length=32, widget=forms.PasswordInput(attrs={'class':'form-control','placeholder':'*******','style':'width:30%'}))
 
 class EditForm(UserChangeForm):
 	class Meta:
@@ -51,23 +51,25 @@ class EditForm(UserChangeForm):
 					'password'
 
 				]
-		labels={ 'username': 'Nombre de Usuario',
-					'first_name': 'Nombre',
-					'last_name': 'Apellidos',
-					'email': 'Correo electrónico',
-					'password': 'Contraseña'
+		labels={ 'username': 'Username',
+					'first_name': 'First Name',
+					'last_name': 'Last Name',
+					'email': 'E-mail',
+					'password': 'Password'
 				}
 	
 class GroupMemberForm(forms.ModelForm):
-	nombreint= forms.CharField(label='Nombre Completo',max_length= 80, widget=forms.TextInput(attrs=
+
+	
+	nombreint= forms.CharField(label='Full Name',max_length= 80, widget=forms.TextInput(attrs=
                                 {'class':'form-control', 'style':'width:100%'}))
-	correoint= forms.EmailField(label= 'Correo', max_length= 100, widget=forms.TextInput(attrs=
+	correoint= forms.EmailField(label= 'E-mail', max_length= 100, widget=forms.TextInput(attrs=
                                 {'class':'form-control',
                                 'placeholder':'example@correo.com',
                                 'style':'width:100%'}))
 	
-	foto1 = forms.ImageField(label='Agregar Foto 1')
-	foto2 = forms.ImageField(label='Agregar Foto 2')
+	foto1 = forms.ImageField(label='Add picture 1')
+	foto2 = forms.ImageField(label='Add picture 2')
 	class Meta:
 		model = GroupMembers
 		exclude = ('cod1', 'cod2')
@@ -80,4 +82,27 @@ class UploadPhotoForm(forms.ModelForm):
     class Meta:
         model=UploadPhoto
         fields = '__all__'
+
+class ExcelUpload(forms.Form):
+	ExcelFile=forms.FileField()
+
+class SheetSelection(forms.Form):
+    #Method that pass arguments to the form.
+    def __init__(self,*args,**kwargs):
+        sheetlist = kwargs.pop('sheetlist')
+        super(SheetSelection,self).__init__(*args,**kwargs)
+        self.fields['sheets'].choices = sheetlist
+
+    sheets=forms.ChoiceField(widget=forms.Select(attrs=
+                                {'class':'dropdown-header',
+                                'style':'width:30%'}))
+
+class ColumnsSelection(forms.Form):
+    def __init__(self,*args,**kwargs):
+        columnslist = kwargs.pop('columnslist')
+        super(ColumnsSelection,self).__init__(*args,**kwargs)
+        self.fields['columns'].choices = columnslist
+
+    columns=forms.MultipleChoiceField(error_messages={'required': 'Choose at least one column'},
+                                        widget=forms.CheckboxSelectMultiple())
 

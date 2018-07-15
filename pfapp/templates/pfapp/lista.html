@@ -70,8 +70,8 @@
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
           <ul class="list-unstyled">
-                    <li ><a href="/profile/"> <i class="far fa-user"></i>Perfil</a></li>
-                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
+                    <li ><a href="/profile/"> <i class="far fa-user"></i>Profile</a></li>
+                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
                                         
           </ul>
         </nav>
@@ -79,7 +79,7 @@
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Perfil de Grupo</h2>
+              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Group Profile</h2>
             </div>
           </header>
         
@@ -87,9 +87,14 @@
             <body >
             <br>
             <div class="col-sm-12 text-right">
-            <h1 align="center" >{{ query_group.0.group }}</h1>
-            <a href="{% url 'upload-photo' %}" align="right">Generar Asistencia>></a>
-            </div>
+            <h1 align="center" >{{ query_group.0.groupid }}</h1>
+          </div>
+          <div class="col-sm-12">
+            <a href="/groups/" align="left"> < < Go Back  </a>
+            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;   
+
+            <a href="{% url 'upload-photo' %}" align="r"> Make Attendance> ></a>
+          </div>
             
             </body>
 
@@ -97,10 +102,10 @@
           <thead>
       
             <tr>
-              <th align="center"><STRONG>Nombre de Integrante</STRONG></th>
-              <th align="center"><STRONG>Correo</STRONG></th>
-              <th align="center"><STRONG>Foto 1 </STRONG></th>
-              <th align="center"><STRONG>Foto 2 </STRONG></th>
+              <th align="center"><STRONG>Member Name</STRONG></th>
+              <th align="center"><STRONG>E-mail</STRONG></th>
+              <th align="center"><STRONG>Picture 1 </STRONG></th>
+              <th align="center"><STRONG>Picture 2 </STRONG></th>
             </tr>
           </thead>
           <tbody>

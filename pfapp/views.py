@@ -1,4 +1,6 @@
 from django.shortcuts import render, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
+
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import UpdateView
@@ -14,16 +16,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
 import time
-
-from .forms import UserForm 
-from .forms import LoginForm 
-from .forms import EditForm, UploadPhotoForm, UploadPhotoForm
-from .forms import GroupMemberFormSet
-
-from .models import Users
-from .models import Group
-from .models import GroupMembers
-from .models import UploadPhoto
+from .datos import *
+from .forms import * 
+from .models import *
 
 
 # Create your views here.
@@ -72,30 +67,28 @@ class ProfileList(ListView): #Vista para ver los grupos creados
 		return Group.objects.filter(user_id=self.request.user)
 	
 class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
-
-    model = Group
-    fields = ['grupo']
-    success_url = reverse_lazy('photo')
-    def get_context_data(self, **kwargs):
-        data = super(GroupGroupMemberCreate, self).get_context_data(**kwargs)
-
-        if self.request.POST:
-        	data['groupmembers'] = GroupMemberFormSet(self.request.POST, self.request.FILES)
-        else:
-            data['groupmembers'] = GroupMemberFormSet()
-        return data
-    def form_valid(self, form):
-        context = self.get_context_data()      
-        groupmembers = context['groupmembers']
-        with transaction.atomic():
-      		#changing value
-        	form.instance.user = self.request.user
-        	self.object = form.save()	
-        	if groupmembers.is_valid():
-        		groupmembers.instance = self.object
-        		groupmembers.save()
-       	return super(GroupGroupMemberCreate, self).form_valid(form)
-  
+	model = Group
+	fields = ['group']
+	labels= {'grupo': 'Group Name' }
+	success_url = reverse_lazy('photo')
+	def get_context_data(self, **kwargs):
+		data = super(GroupGroupMemberCreate, self).get_context_data(**kwargs)
+		if self.request.POST:
+			data['groupmembers'] = GroupMemberFormSet(self.request.POST, self.request.FILES)
+		else:
+			data['groupmembers'] = GroupMemberFormSet()
+		return data
+	def form_valid(self, form):
+		context = self.get_context_data()      
+		groupmembers = context['groupmembers']
+		with transaction.atomic():
+			form.instance.user = self.request.user
+      		self.object = form.save()	
+      		if groupmembers.is_valid():
+      			groupmembers.instance = self.object
+      			groupmembers.save()
+		return super(GroupGroupMemberCreate, self).form_valid(form)
+	  
 
 def codificacion(request): #Vista para obtener el vector con las caracteristicas de las personas
 	from os import listdir
@@ -109,7 +102,7 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 	x=[]
 	y=[]
 	pk=[]
-	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers WHERE  group_id=( SELECT MAX(group_id) FROM pfapp_groupmembers )'):
+	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers WHERE  groupid_id=( SELECT MAX(groupid_id) FROM pfapp_groupmembers )'):
 		dire1=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.foto1))
 		dire2=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.foto2))
 		x.append(dire1)
@@ -133,14 +126,14 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 	return redirect('profile-list')
 grupo_selec=0
 def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
-	query_group=GroupMembers.objects.filter(group=group_grupo)
+	query_group=GroupMembers.objects.filter(groupid=group_grupo)
 	global grupo_selec
 	grupo_selec=group_grupo
 	context={
 	'query_group':query_group
 	}
 	return render(request,'pfapp/lista.html',context)
-    		
+			
 class GroupPhotoEntry(CreateView): #Vista para cargar foto de asistencia
  
 	model = UploadPhoto
@@ -165,7 +158,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	cursor = bd.cursor()
 	global grupo_selec
 
-	cursor.execute("SELECT id,cod1, cod2 FROM pfapp_groupmembers WHERE group_id = '%s'" %grupo_selec)
+	cursor.execute("SELECT id,cod1, cod2 FROM pfapp_groupmembers WHERE groupid_id = '%s'" %grupo_selec)
 	results = cursor.fetchall()
 	A = np.array([])
 	for i in results:
@@ -179,13 +172,13 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	print("Tipo de A")
 	A=eval(A)
 	A = [np.array(element) for element in A]
- 	known_face_encodings=A
+	known_face_encodings=A
 	
 	B = np.array([])
-	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE group_id = %s', [grupo_selec]):
+	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE groupid_id = %s', [grupo_selec]):
 		name=n.nombreint
 		list_string = str(name)
-	   	name=np.array(list_string)
+		name=np.array(list_string)
 		B = np.append(B, name)
 		B = np.append(B, name)
 	B=','.join(map(str, B))
@@ -221,12 +214,12 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				mindispos = matches.tolist().index(min(matches))
 				name = known_face_names[mindispos]
 		 # Draw a box around the face using the Pillow module
-		 	draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+			draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
 
 		 # Draw a label with a name below the face
-		  	text_width, text_height = draw.textsize(name)
-		  	draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
-		  	draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
+			text_width, text_height = draw.textsize(name)
+			draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
+			draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
 
 
 		 # Remove the drawing library from memory as per the Pillow docs
@@ -240,5 +233,115 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	return HttpResponse(html)
 	
 	
+def loadExcel(request):
+
+	if request.method == 'POST':
+		form = ExcelUpload(request.POST, request.FILES)
+		if form.is_valid():
+			#Get File from the form
+			ExcelFile=request.FILES['ExcelFile']
+			#Validating File
+			if ExcelFile.name.find(".xls")==-1:
+				print("NO EXCEL FILE")
+				messages.add_message(request, messages.ERROR,"Choose a file (.xls o .xlsx)")
+				return redirect("/loadexcel")
+			#Saving the excel file
+			rootpath=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Excel')
+			fs=FileSystemStorage(location=rootpath)
+			#delete de file if exist
+			fs.delete(ExcelFile.name)
+			filename=fs.save(ExcelFile.name,ExcelFile)
+			sheetnames=Sheets(ExcelFile.name)
+			#Saving Sessions
+			request.session['sheetnames']=sheetnames
+			request.session['ExcelName']=ExcelFile.name
+			request.session['Uploaded']=True
+			#request.session['user']='UsuarioPruebas'
+			
+			return redirect("/chooseSheet")
+	else:
+		form = ExcelUpload()
+		#Deleting a file that will not be used
+	try:
+		if request.session['Uploaded']:
+				rootpath=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'Excel')
+				fs=FileSystemStorage(location=rootpath)
+				fs.delete(request.session['ExcelName'])
+	except:
+		print('Not File')
+	request.session['Uploaded']=False
+	return render(request,'pfapp/excelform.html',{'form':form})
 	
+def chooseSheet(request):
+	if request.method=='POST':
+		form=SheetSelection(request.POST, sheetlist=request.session['sheetnames'])
+		if form.is_valid():
+			#getting data from the form and Saving sessions to use it later
+			sheet=form.cleaned_data['sheets']
+			request.session['sheet']=sheet
+			
+			return redirect("/pickColumns")
+	else:
+		form=SheetSelection(sheetlist=request.session['sheetnames'])
+	return render(request,'pfapp/sheet_form.html',{'form':form})
+
+def pickcolumns(request):
+
+	columnslist,ExcelFile=Columns(request.session['ExcelName'],request.session['sheet'])
+	form=ColumnsSelection(columnslist=columnslist)
+	#Replacing NaN for ""
+	ExcelFile=ExcelFile.replace(pd.np.nan,'', regex=True)
+	#Showing all rows Excel file
+	ExcelFile=ExcelFile.to_html(classes='table-striped " id = "my_table',index=False)
+	if request.method=='POST':
+		form=ColumnsSelection(request.POST  ,columnslist=columnslist)
+		#get selection
+		if form.is_valid():
+			columns=form.cleaned_data['columns']
+			request.session['columns']=columns
+			
+			return redirect('/formset_excel')
+		else:
+			#Looking for error messages 
+			if form.errors.as_data():
+				for e in form.errors['columns'].as_data():
+					e=str(e)
+					e=e[2:len(e)-2]
+					messages.add_message(request, messages.ERROR,e)
+	return render(request,'pfapp/pickcolumns.html',{'form':form,'ExcelFile':ExcelFile})
+
+class formset_excel(CreateView):
 	
+	model = Group
+	fields = ['group']
+	template_name= "pfapp/group_excel_form.html"
+
+	success_url = reverse_lazy('photo')
+	def get_context_data(self, **kwargs):
+		#Vector con datos de nombres
+		nombres=['juan','jose']
+		#create Formset
+		GroupMemberExcelFormSet = inlineformset_factory(Group, GroupMembers,
+                                            form=GroupMemberForm, extra=len(nombres))
+		data = super(formset_excel, self).get_context_data(**kwargs)
+
+		if self.request.POST:
+			data['groupmembers'] = GroupMemberExcelFormSet(self.request.POST, self.request.FILES)
+		else:
+			data['groupmembers'] = GroupMemberExcelFormSet(initial=[{'nombreint': nombres[i]} for i in range(0,len(nombres))])
+
+		return data
+	def form_valid(self, form):
+		context = self.get_context_data()      
+		groupmembers = context['groupmembers']
+
+		with transaction.atomic():
+
+			#changing value
+			form.instance.user = self.request.user
+			self.object = form.save()	
+			if groupmembers.is_valid():
+				groupmembers.instance = self.object
+				groupmembers.save()
+		return super(formset_excel, self).form_valid(form)
+		

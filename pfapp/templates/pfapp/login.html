@@ -36,9 +36,9 @@
               <div class="info d-flex align-items-center">
                 <div class="content">
                   <div class="logo">
-                    <h1>Bienvenido a SmartAttendance</h1>
+                    <h1>Welcome to SmartAttendance</h1>
                   </div>
-                  <p>La nueva forma de llevar el registro de tus reuniones.</p>
+                  <p>The new way to keep track of your meetings.</p>
                 </div>
               </div>
             </div>
@@ -47,11 +47,11 @@
               <div class="form d-flex align-items-center">
                 <div class="content">
                   <form method="post">
-                    <small>*Si está registrado, inice sesión </small>
+                    <small>*If you are already registered, sign in </small>
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Ingresar</button>
-                  </form><a href="#" class="forgot-pass">¿Olvidó su contraseña?</a><br><small>¿Aún no tiene cuenta? </small><a href="/register" class="signup">Únete</a>
+                    <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Log in</button>
+                  </form><a href="#" class="forgot-pass">Forgot your password?</a><br><small>Don't have an account? </small><a href="/register" class="signup"> Sign up ></a>
                 </div>
               </div>
             </div>
