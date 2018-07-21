@@ -19,7 +19,9 @@ import time
 from .datos import *
 from .forms import * 
 from .models import *
-
+Columnas = None
+Sheet = None
+Filename =None
 
 # Create your views here.
 class register(CreateView): #Vista para el registro de usuario
@@ -289,17 +291,25 @@ def pickcolumns(request):
 
 	columnslist,ExcelFile=Columns(request.session['ExcelName'],request.session['sheet'])
 	form=ColumnsSelection(columnslist=columnslist)
+	global Filename 
+	Filename= request.session['ExcelName']
+	global Sheet
+	Sheet=request.session['sheet']
 	#Replacing NaN for ""
 	ExcelFile=ExcelFile.replace(pd.np.nan,'', regex=True)
+	#print nombre column
+	#print(ExcelFile['Nombre'].tolist()[0])
+
 	#Showing all rows Excel file
-	ExcelFile=ExcelFile.to_html(classes='table-striped " id = "my_table',index=False)
+	ExcelHTML=ExcelFile.to_html(classes='table-striped " id = "my_table',index=False)
 	if request.method=='POST':
 		form=ColumnsSelection(request.POST  ,columnslist=columnslist)
 		#get selection
 		if form.is_valid():
 			columns=form.cleaned_data['columns']
 			request.session['columns']=columns
-			
+			global Columnas
+			Columnas=request.session['columns']
 			return redirect('/formset_excel')
 		else:
 			#Looking for error messages 
@@ -311,15 +321,21 @@ def pickcolumns(request):
 	return render(request,'pfapp/pickcolumns.html',{'form':form,'ExcelFile':ExcelFile})
 
 class formset_excel(CreateView):
-	
 	model = Group
 	fields = ['group']
 	template_name= "pfapp/group_excel_form.html"
-
 	success_url = reverse_lazy('photo')
 	def get_context_data(self, **kwargs):
+
+		#global variables
+		global Filename
+		global Sheet
+		global Columnas
 		#Vector con datos de nombres
-		nombres=['juan','jose']
+		ExcelFile=FinalExcel(Filename,Sheet,Columnas)
+		nombres=ExcelFile['Nombre'].values.tolist()
+		correos=ExcelFile['Correo'].values.tolist()
+
 		#create Formset
 		GroupMemberExcelFormSet = inlineformset_factory(Group, GroupMembers,
                                             form=GroupMemberForm, extra=len(nombres))
@@ -328,8 +344,8 @@ class formset_excel(CreateView):
 		if self.request.POST:
 			data['groupmembers'] = GroupMemberExcelFormSet(self.request.POST, self.request.FILES)
 		else:
-			data['groupmembers'] = GroupMemberExcelFormSet(initial=[{'nombreint': nombres[i]} for i in range(0,len(nombres))])
-
+			data['groupmembers'] = GroupMemberExcelFormSet(initial=[{'nombreint': nombres[i] , 'correoint': correos[i]} for i in range(0,len(nombres))]) 
+			
 		return data
 	def form_valid(self, form):
 		context = self.get_context_data()      

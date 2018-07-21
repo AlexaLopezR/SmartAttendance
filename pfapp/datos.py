@@ -32,4 +32,11 @@ def FinalExcel(filename,sheet,columns):
     ExcelFile=ExcelFile[columns]
     return ExcelFile
 
-
+''' 
+This functions returns an ExcelFile (Pandas Excel dataframe) from a defined excel file, sheet and columns.
+Params.
+filename: Excel Filename
+sheet: Excel Sheet name that have data that will be extract
+columns: Columns that will be use in order to createa dataframe
+example: ExcelFile=FinalExcel('Curso1.xlsx','Hoja1','Nombre, Código')
+'''
