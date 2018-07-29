@@ -14,12 +14,8 @@ from .models import Users, UploadPhoto
 from .models import Group
 from .models import GroupMembers
 
-class UploadPhotoForm(forms.ModelForm):
-	photo = forms.ImageField(label='Select Picture')
-	class Meta:
-		model = UploadPhoto
-		exclude = ()
-		
+
+
 class UserForm(UserCreationForm):
 	
 	class Meta:
@@ -78,7 +74,8 @@ GroupMemberFormSet = inlineformset_factory(Group, GroupMembers,
                                             form=GroupMemberForm, extra=1)
 
 class UploadPhotoForm(forms.ModelForm):
-    picture=forms.ImageField(label='Agregar foto del grupo')
+    picture=forms.ImageField(label='Add Group Picture', widget=forms.FileInput(attrs=
+                                {'capture':'camera', 'accept':'image/*'}))
     class Meta:
         model=UploadPhoto
         fields = '__all__'

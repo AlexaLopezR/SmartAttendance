@@ -23,6 +23,8 @@ urlpatterns= [
     url(r'^prueba/$',views.codificacion ,name='photo'),
     url(r'^(?P<group_grupo>[0-9]+)/$',views.GroupList, name='detail'),
     url(r'^upload/$', views.GroupPhotoEntry.as_view(), name='upload-photo'),
+    url(r'^uppicture/$', views.pictureUpload, name='picture-upload'),
+
     url(r'^attendance/$',views.attendanceGenerator ,name='attendance'),
 
 

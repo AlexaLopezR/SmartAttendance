@@ -19,6 +19,8 @@ import time
 from .datos import *
 from .forms import * 
 from .models import *
+import base64
+
 Columnas = None
 Sheet = None
 Filename =None
@@ -135,13 +137,41 @@ def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
 	'query_group':query_group
 	}
 	return render(request,'pfapp/lista.html',context)
+
+def pictureUpload(request):
+	import MySQLdb
+
+	if request.method == "POST" and request.is_ajax():
+		name = request.POST['name']
+		print("tiponame")
+		name=str(name).replace('data:image/png;base64,','')
+		print(type(name))
+		date=time.strftime("%H:%M:%S")
+		fileroute="static/media/pfapp/images/newimage" + date + ".png" 
+		with open(fileroute, "wb") as f:
+			f.write(name.decode('base64'))
+
+			f.close()
+			print("guarda foto")
+			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+			print("conexion base")
+			cursor = bd.cursor()
+			print("se hizo cursor")
+			cursor.execute("INSERT into pfapp_uploadphoto (picture) values ('%s')" %fileroute)
+           	#(pk,class_dir,x[p])
+			bd.commit()
+
+		return HttpResponse("name")
+	else:
+		status= "Bad" 
+		return HttpResponse(status)
 			
 class GroupPhotoEntry(CreateView): #Vista para cargar foto de asistencia
  
 	model = UploadPhoto
 	template_name= "pfapp/uploadphoto_form.html"
 	form_class = UploadPhotoForm
-	success_url=reverse_lazy('attendance')
+	success_url=reverse_lazy('profile-list')
 
 def attendanceGenerator(request): #Vista para generar asistencia
 	from os import listdir

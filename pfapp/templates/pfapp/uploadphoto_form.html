@@ -71,33 +71,46 @@
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
-          <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
+          <!-- Sidebar Navidation Menus--><span class="heading">Menu</span>
           <ul class="list-unstyled">
-                    <li><a href="/profile/"> <i class="fas fa-user"></i>Perfil</a></li>    
-                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Grupos</a></li>
+                    <li><a href="/profile/"> <i class="fas fa-user"></i>Profile</a></li>    
+                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
           </ul>
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
           <header class="page-header">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="far fa-check-square"></i>Generar Asistencia</h2>
+              <h2 class="no-margin-bottom"><i class="far fa-check-square"></i>Make Attendance</h2>
             </div>
           </header>
           <br>
         <div class="col-md-12">
-          	<form action="" method="post" enctype="multipart/form-data">
-			   {% csrf_token %}
+            <h5>Choose a Photo from your gallery</h5>
+          	<form action="" method="post" enctype="multipart/form-data" >
+               {% csrf_token %}
                {{ form.as_p }}
-			    <div class="form-group">
-			        <div class="col-sm-6">
-			            <a href="{% url 'attendance' %}"> <button type="submit" class="btn btn-primary">Generar</button> </a>
-			        </div>
-			    </div>
-			</form>
+   
+              <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Generate</button>  
+
+			     </form>
         </div>
-              
-          
+      <br>
+      <div class="col-md-12" id="screenshot" >
+        <h5>Or take a picture from your device</h5>
+
+        <video class="videostream" autoplay=""></video>
+        <p><img id="screenshot-img"></p>
+        <p><button align= "left" id="capture-button" class="btn btn-primary">Capture video</button>
+        <button id="screenshot-button" class="btn btn-primary" disabled="">Take screenshot</button></p>
+      </div>
+
+               {% csrf_token %}
+      <div class="col-md-12">      
+           <button onclick="PostFunction()"  class="btn btn-primary">Generate</button>  
+      </div>
+  </body>
+
 
           <!-- Page Footer-->
           <footer class="main-footer">
@@ -125,18 +138,65 @@
     <script src="{% static 'vendor/jquery-validation/jquery.validate.min.js' %}"></script>
     <!-- Main File-->
     <script src="{% static 'js/front.js' %}"></script>
-  </body>
   
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="{% static 'path_to/jquery.formset.js' %}"></script>
 <script src="{% static 'js/jquery.formset.js' %}"></script>
 
-<script type="text/javascript">
-        $('.formset_row').formset({
-            addText: 'Agregar estudiante',
-            deleteText: 'Eliminar',
-            prefix: 'groupmembers_set'
-        });
+
+
+
+<img src="">
+<canvas style="display:none;"></canvas>
+
+<script>
+
+const constraints = {
+  video: true
+};
+
+const captureVideoButton =
+document.querySelector('#capture-button');
+const screenshotButton = document.querySelector('#screenshot-button');
+const img = document.querySelector('#screenshot img');
+const video = document.querySelector('#screenshot video');
+const input=document.querySelector('#id_picture')
+const canvas = document.createElement('canvas');
+
+captureVideoButton.onclick = function() {
+  navigator.mediaDevices.getUserMedia(constraints).
+    then(handleSuccess).catch(handleError);
+};
+
+screenshotButton.onclick = video.onclick = function() {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0);
+  // Other browsers will fall back to image/png
+  img.src = canvas.toDataURL('image/webp');
+};
+
+function handleSuccess(stream) {
+  screenshotButton.disabled = false;
+  video.srcObject = stream;
+}
+
+function PostFunction(){
+  $.ajax({
+    type: "POST",
+    url: "/uppicture/",
+    data: {'name': canvas.toDataURL('image/webp'), 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()}
+  }).done(function(o) {
+      window.location.href = "/groups/";
+      alert("post");
+
+
+    // If you want the file to be visible in the browser 
+    // - please modify the callback in javascript. All you
+    // need is to return the url to the file, you just saved 
+    // and than put the image in your browser.
+  });
+};
 </script>
-  
+
 </html>
