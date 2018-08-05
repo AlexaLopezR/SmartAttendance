@@ -39,7 +39,7 @@ class GroupMembers(models.Model):
 
 class UploadPhoto(models.Model):
 	picture= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
-
-
-
 	
+class ResultPicture(models.Model):
+	result=models.ImageField(upload_to=get_image_path,default='default.jpg')
+	idgroup=models.ForeignKey(Group, default=1)

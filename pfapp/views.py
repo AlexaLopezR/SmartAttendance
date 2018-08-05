@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponse
 from django.http import HttpResponseRedirect, HttpResponse
 
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.views.generic import UpdateView
 from django.contrib import messages
 from django.db import IntegrityError, transaction
@@ -20,6 +20,8 @@ from .datos import *
 from .forms import * 
 from .models import *
 import base64
+import MySQLdb
+
 
 Columnas = None
 Sheet = None
@@ -107,8 +109,8 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 	y=[]
 	pk=[]
 	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers WHERE  groupid_id=( SELECT MAX(groupid_id) FROM pfapp_groupmembers )'):
-		dire1=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.foto1))
-		dire2=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.foto2))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto1))
+		dire2=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto2))
 		x.append(dire1)
 		y.append(dire2)
 		pk.append(p.id)
@@ -139,7 +141,6 @@ def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
 	return render(request,'pfapp/lista.html',context)
 
 def pictureUpload(request):
-	import MySQLdb
 
 	if request.method == "POST" and request.is_ajax():
 		name = request.POST['name']
@@ -153,7 +154,7 @@ def pictureUpload(request):
 
 			f.close()
 			print("guarda foto")
-			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+			bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
 			print("conexion base")
 			cursor = bd.cursor()
 			print("se hizo cursor")
@@ -171,7 +172,7 @@ class GroupPhotoEntry(CreateView): #Vista para cargar foto de asistencia
 	model = UploadPhoto
 	template_name= "pfapp/uploadphoto_form.html"
 	form_class = UploadPhotoForm
-	success_url=reverse_lazy('profile-list')
+	success_url=reverse_lazy('attendance')
 
 def attendanceGenerator(request): #Vista para generar asistencia
 	from os import listdir
@@ -186,7 +187,8 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	from resizeimage import resizeimage
 	import numpy as np
 	import MySQLdb
-	bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+	from django.template import loader
+	bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
 	cursor = bd.cursor()
 	global grupo_selec
 
@@ -205,7 +207,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	A=eval(A)
 	A = [np.array(element) for element in A]
 	known_face_encodings=A
-	
+	james=np.array([])
 	B = np.array([])
 	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE groupid_id = %s', [grupo_selec]):
 		name=n.nombreint
@@ -216,27 +218,29 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	B=','.join(map(str, B))
 	B=B.split(',')
 	known_face_names=B
-
 	tol=0.6
+	james=B
+	print(james)
 	for p in UploadPhoto.objects.raw('SELECT * FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
-		dire1=os.path.join('/home/alexalopez/PF/SmartAttendance/static/media/', str(p.picture))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture))
 		unknown_image = face_recognition.load_image_file(dire1)
 		image=Image.fromarray(unknown_image)
 		enhancer_object = ImageEnhance.Contrast(image)
 		enhancer_object = ImageEnhance.Color(image)
 		out = enhancer_object.enhance(1.3)
-		out.save('/home/alexalopez/PF/SmartAttendance/static/media/imagenmejorada.jpg')
-		unknown_image = face_recognition.load_image_file('/home/alexalopez/PF/SmartAttendance/static/media/imagenmejorada.jpg')
+		out.save('/home/ubuntu/SmartAttendance/static/media/imagenmejorada.jpg')
+		unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada.jpg')
 		height = np.size(unknown_image, 0)
 		width = np.size(unknown_image, 1)
 		if (width<2000 and height<2000):
 			unknown_image = cv2.resize(unknown_image, (2500, 2000)) 
-		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="cnn")
+		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
 		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 		pil_image = Image.fromarray(unknown_image)
 
 		#  Create a Pillow ImageDraw Draw instance to draw with
 		draw = ImageDraw.Draw(pil_image)
+		name_list=[]
 		# Loop through each face found in the unknown image
 		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
 		# See if the face is a match for the known face(s)
@@ -245,24 +249,36 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			if(min(matches)<=tol):
 				mindispos = matches.tolist().index(min(matches))
 				name = known_face_names[mindispos]
+				name_list.append(name)
 		 # Draw a box around the face using the Pillow module
 			draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
 
 		 # Draw a label with a name below the face
 			text_width, text_height = draw.textsize(name)
-			draw.rectangle(((left, bottom - text_height - 10), (right, bottom)), fill=(0, 0, 255), outline=(0, 0, 255))
-			draw.text((left + 6, bottom - text_height - 5), name, fill=(255, 255, 255, 255))
+			draw.rectangle(((left- 10, bottom - 10 ), (right - 10, bottom - 10)), fill=(0, 0, 255), outline=(0, 0, 255))
+			draw.text((left + 6, bottom - text_height - 10), name,fill=(0, 150, 255), font=ImageFont.truetype('Pillow/Tests/fonts/FreeSansBold.ttf', 60))
 
 
 		 # Remove the drawing library from memory as per the Pillow docs
 		del draw
-
+		global grupo_selec
 		 #  Display the resulting image
-		pil_image.save("resultado_salon.jpg")
-
-	
-	html = "<html><body>It is now.</body></html>"
-	return HttpResponse(html)
+		date=time.strftime("%H:%M:%S")
+		fileroute="/home/ubuntu/SmartAttendance/static/media/resultimage" + date + ".png" 
+		pil_image.save(fileroute)
+		fileroute2="/media/resultimage"+date+".png"
+		bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+		cursor = bd.cursor()
+		cursor.execute("INSERT into pfapp_resultpicture (result, idgroup_id) values ('%s','%s')" %  (fileroute ,grupo_selec))
+       	#(pk,class_dir,x[p])
+		bd.commit()
+		print(name_list)
+		missing=set(james)-set(name_list)
+		missing=list(missing)
+		print(missing)
+		context={'names':name_list, 'missing':missing, 'fileroute':fileroute2}
+	    
+	return render(request, 'pfapp/result.html', context)
 	
 	
 def loadExcel(request):
@@ -390,4 +406,13 @@ class formset_excel(CreateView):
 				groupmembers.instance = self.object
 				groupmembers.save()
 		return super(formset_excel, self).form_valid(form)
+
+def tryy(request):
+	global grupo_selec
+	query_group=ResultPicture.objects.filter(idgroup=group_selec)
+	context={
+	'query_group':query_group
+	}
+	return render(request, 'pfapp/result.html')
+
 		

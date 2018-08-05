@@ -78,7 +78,7 @@ class UploadPhotoForm(forms.ModelForm):
                                 {'capture':'camera', 'accept':'image/*'}))
     class Meta:
         model=UploadPhoto
-        fields = '__all__'
+        exclude = ('idgroup',)
 
 class ExcelUpload(forms.Form):
 	ExcelFile=forms.FileField()
