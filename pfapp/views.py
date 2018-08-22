@@ -2,30 +2,31 @@ from django.shortcuts import render, HttpResponse
 from django.http import HttpResponseRedirect, HttpResponse
 
 from django.core.files.storage import FileSystemStorage
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import UpdateView
 from django.contrib import messages
 from django.db import IntegrityError, transaction
 from django.forms.formsets import formset_factory
-from django.core.urlresolvers import reverse_lazy 
-from django.views.generic import CreateView, UpdateView, DeleteView, ListView
+from django.core.urlresolvers import reverse_lazy , reverse
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView, FormView, View
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm
 from django.conf import settings 
 from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 import time
 from .datos import *
 from .forms import * 
 from .models import *
 import base64
-import MySQLdb
-
 
 Columnas = None
 Sheet = None
 Filename =None
+grupo_selec=0
+
 
 # Create your views here.
 class register(CreateView): #Vista para el registro de usuario
@@ -94,7 +95,7 @@ class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
       			groupmembers.instance = self.object
       			groupmembers.save()
 		return super(GroupGroupMemberCreate, self).form_valid(form)
-	  
+
 
 def codificacion(request): #Vista para obtener el vector con las caracteristicas de las personas
 	from os import listdir
@@ -130,17 +131,19 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 
 	print("listo")
 	return redirect('profile-list')
-grupo_selec=0
 def GroupList(request, group_grupo): #Vista para ver los integrantes del grupo
 	query_group=GroupMembers.objects.filter(groupid=group_grupo)
+	print(group_grupo)
 	global grupo_selec
 	grupo_selec=group_grupo
+	#editGroup.grupo_selec2=grupo_selec
 	context={
 	'query_group':query_group
 	}
 	return render(request,'pfapp/lista.html',context)
 
-def pictureUpload(request):
+def pictureUpload(request): #Vista para la foto tomada desde camara
+	import MySQLdb
 
 	if request.method == "POST" and request.is_ajax():
 		name = request.POST['name']
@@ -154,7 +157,7 @@ def pictureUpload(request):
 
 			f.close()
 			print("guarda foto")
-			bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 			print("conexion base")
 			cursor = bd.cursor()
 			print("se hizo cursor")
@@ -188,7 +191,8 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	import numpy as np
 	import MySQLdb
 	from django.template import loader
-	bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+	from  more_itertools import unique_everseen
+	bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 	cursor = bd.cursor()
 	global grupo_selec
 
@@ -209,10 +213,14 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	known_face_encodings=A
 	james=np.array([])
 	B = np.array([])
+	C = np.array([])
 	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE groupid_id = %s', [grupo_selec]):
 		name=n.nombreint
+		identity=n.id
 		list_string = str(name)
+		list_string2=str(identity)
 		name=np.array(list_string)
+		identity=np.array(list_string2)
 		B = np.append(B, name)
 		B = np.append(B, name)
 	B=','.join(map(str, B))
@@ -241,22 +249,36 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		#  Create a Pillow ImageDraw Draw instance to draw with
 		draw = ImageDraw.Draw(pil_image)
 		name_list=[]
+		ids_list=[]
+		ids=0
+		uf=0
+		unknown_list=[]
 		# Loop through each face found in the unknown image
 		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
 		# See if the face is a match for the known face(s)
 			matches = face_recognition.face_distance(known_face_encodings, face_encoding)
 			name = "Unknown"
+			ids_str="Unknown"
 			if(min(matches)<=tol):
 				mindispos = matches.tolist().index(min(matches))
 				name = known_face_names[mindispos]
 				name_list.append(name)
+				ids=ids+1
+				ids_str=str(ids)
+				ids_list.append(ids)
+			else:
+				uf=uf+1
+				unknown_list.append(name+str(uf))
+				ids_str="U"+str(uf)
+				
+				
 		 # Draw a box around the face using the Pillow module
 			draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
 
 		 # Draw a label with a name below the face
-			text_width, text_height = draw.textsize(name)
+			text_width, text_height = draw.textsize(ids_str)
 			draw.rectangle(((left- 10, bottom - 10 ), (right - 10, bottom - 10)), fill=(0, 0, 255), outline=(0, 0, 255))
-			draw.text((left + 6, bottom - text_height - 10), name,fill=(0, 150, 255), font=ImageFont.truetype('Pillow/Tests/fonts/FreeSansBold.ttf', 60))
+			draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(0, 150, 255), font=ImageFont.truetype('Pillow/Tests/fonts/FreeSansBold.ttf', 60))
 
 
 		 # Remove the drawing library from memory as per the Pillow docs
@@ -267,7 +289,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		fileroute="/home/ubuntu/SmartAttendance/static/media/resultimage" + date + ".png" 
 		pil_image.save(fileroute)
 		fileroute2="/media/resultimage"+date+".png"
-		bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 		cursor = bd.cursor()
 		cursor.execute("INSERT into pfapp_resultpicture (result, idgroup_id) values ('%s','%s')" %  (fileroute ,grupo_selec))
        	#(pk,class_dir,x[p])
@@ -275,8 +297,9 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		print(name_list)
 		missing=set(james)-set(name_list)
 		missing=list(missing)
+		print(ids_list)
 		print(missing)
-		context={'names':name_list, 'missing':missing, 'fileroute':fileroute2}
+		context={'names':name_list, 'missing':missing, 'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list}
 	    
 	return render(request, 'pfapp/result.html', context)
 	
@@ -367,10 +390,12 @@ def pickcolumns(request):
 	return render(request,'pfapp/pickcolumns.html',{'form':form,'ExcelFile':ExcelFile})
 
 class formset_excel(CreateView):
+
 	model = Group
 	fields = ['group']
 	template_name= "pfapp/group_excel_form.html"
 	success_url = reverse_lazy('photo')
+	
 	def get_context_data(self, **kwargs):
 
 		#global variables
@@ -407,12 +432,122 @@ class formset_excel(CreateView):
 				groupmembers.save()
 		return super(formset_excel, self).form_valid(form)
 
-def tryy(request):
-	global grupo_selec
-	query_group=ResultPicture.objects.filter(idgroup=group_selec)
-	context={
-	'query_group':query_group
-	}
-	return render(request, 'pfapp/result.html')
 
+def Testing(**kwargs):
+		grupo_selec
+		print(grupo_selec)
+		retornar=grupo_selec
+		print("fin")
+		return grupo_selec
 		
+class editGroup(UpdateView): #Vista para el formulario de editar del grupo
+ 
+	model = Group
+	fields = ['group']
+	labels= {'grupo': 'Group Name' }
+	template_name= "pfapp/editgroup.html"
+	success_url = reverse_lazy('editCod')
+	def __init__(self):
+		groupname = Group.objects.filter(id=grupo_selec)
+		editGroup.initial={'group': groupname[0]}
+	def get_object(self):
+		return get_object_or_404(Group, pk=grupo_selec)
+	def get_context_data(self, **kwargs):
+		members = GroupMembers.objects.filter(groupid_id=grupo_selec)
+		GroupMemberEditFormSet = inlineformset_factory(Group, GroupMembers, can_delete=True,
+                                            form=GroupMemberEditForm, extra=len(members))
+		data = super(editGroup, self).get_context_data(**kwargs)
+		grupo=Group.objects.get(pk=grupo_selec)
+		if self.request.POST:
+
+			data['groupmembers'] = GroupMemberEditFormSet(self.request.POST, self.request.FILES)
+		else:
+			try:
+				data['groupmembers'] = GroupMemberEditFormSet(initial=[{'nombreint': members[i].nombreint , 'correoint': members[i].correoint, 'foto1':members[i].foto1, 'foto2':members[i].foto2 } for i in range(0,len(members))])
+			except (ObjectDoesNotExist, MultipleObjectsReturned):
+				pass
+		return data
+	def form_valid(self, form):
+		context = self.get_context_data()      
+		groupmembers = context['groupmembers']
+		with transaction.atomic():
+			form.instance.user = self.request.user
+			#self.object = form.save()
+			if groupmembers.is_valid():
+								
+				#groupmembers.instance = self.object
+					
+				idgroup=Group.objects.only('id').get(id=grupo_selec)
+				members = GroupMembers.objects.filter(groupid_id=grupo_selec)
+				i=0
+				#print(groupmembers.group)
+				for f in groupmembers:
+					nombreint = f.cleaned_data['nombreint']
+					correoint= f.cleaned_data['correoint']
+					foto1= f.cleaned_data['foto1'] 
+					foto2= f.cleaned_data['foto2']
+					try:	
+						data=GroupMembers.objects.get(correoint=members[i].correoint)
+						data.nombreint=nombreint
+						data.correoint=correoint
+						if foto1 != None:
+							data.foto1=foto1
+						if foto2 != None:
+							data.foto2=foto2
+						data.groupid=idgroup
+						data.save()
+						print("end try")
+					except:
+						print(nombreint)
+						newmember=GroupMembers(groupid=idgroup, nombreint= nombreint, correoint=correoint,foto1=foto1, foto2=foto2)
+						newmember.save()
+
+					i=i+1
+				dataGroup=Group.objects.get(id=grupo_selec)
+				dataGroup.group=form.instance.group
+				dataGroup.save()
+				#groupmembers.save()
+		return super(editGroup, self).form_valid(form)
+
+def codificacionEdit(request): #Vista para obtener el vector con las caracteristicas de las personas
+	from os import listdir
+	from os.path import join
+	import face_recognition
+	from face_recognition import face_locations
+	from face_recognition.cli import image_files_in_folder
+	import os
+	import numpy as np
+
+	global grupo_selec
+	x=[]
+	y=[]
+	pk=[]
+	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers  WHERE groupid_id = %s', [grupo_selec]):
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto1))
+		dire2=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto2))
+		x.append(dire1)
+		y.append(dire2)
+		pk.append(p.id)
+	for i in range(0,len(x)):
+		image = face_recognition.load_image_file(x[i])
+		cod=face_recognition.face_encodings(image)
+		cod=np.array(cod)
+		print(type(cod))
+		GroupMembers.objects.filter(id =pk[i]).update(cod1 =cod[0])
+	for i in range(0,len(y)):
+		image = face_recognition.load_image_file(y[i])
+		cod=face_recognition.face_encodings(image)
+		cod=np.array(cod)
+		print(type(cod))
+		GroupMembers.objects.filter(id =pk[i]).update(cod2 =cod[0])
+		
+
+	print("listo")
+	return redirect('profile-list')
+
+
+def Delete(request,part_id =None):
+    deletemember = GroupMembers.objects.get(id=part_id)
+    deletemember.delete()
+    global grupo_selec
+    return HttpResponseRedirect(reverse('detail', args=(grupo_selec,)))

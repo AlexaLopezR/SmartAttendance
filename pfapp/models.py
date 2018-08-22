@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.contrib.auth.models import User
@@ -15,7 +17,7 @@ def get_image_path(instance, filename):
 
 class Users(models.Model):
 	nombre= models.CharField(max_length= 80)
-	correo= models.EmailField(max_length= 100, unique=True)
+	correo= models.EmailField(max_length= 100, unique=False)
 	contrasena= models.CharField(max_length=32)
 
 class Group(models.Model):
@@ -28,7 +30,7 @@ class Group(models.Model):
 class GroupMembers(models.Model):
 	groupid=models.ForeignKey(Group)
 	nombreint= models.CharField(max_length= 80)
-	correoint= models.EmailField(max_length= 100, unique=True)
+	correoint= models.EmailField(max_length= 100, unique=False)
 	foto1= models.ImageField(upload_to=get_image_path,default='default.jpg')
 	foto2=models.ImageField(upload_to=get_image_path,default='default.jpg')
 	cod1= models.TextField()

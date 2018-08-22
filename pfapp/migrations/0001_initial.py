@@ -35,6 +35,14 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
+            name='ResultPicture',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('result', models.ImageField(default=b'default.jpg', upload_to=pfapp.models.get_image_path)),
+                ('idgroup', models.ForeignKey(default=1, to='pfapp.Group')),
+            ],
+        ),
+        migrations.CreateModel(
             name='UploadPhoto',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),

@@ -64,8 +64,8 @@ class GroupMemberForm(forms.ModelForm):
                                 'placeholder':'example@correo.com',
                                 'style':'width:100%'}))
 	
-	foto1 = forms.ImageField(label='Add picture 1')
-	foto2 = forms.ImageField(label='Add picture 2')
+	foto1 = forms.ImageField(label='Add picture 1', required=True)
+	foto2 = forms.ImageField(label='Add picture 2', required=True)
 	class Meta:
 		model = GroupMembers
 		exclude = ('cod1', 'cod2')
@@ -78,7 +78,7 @@ class UploadPhotoForm(forms.ModelForm):
                                 {'capture':'camera', 'accept':'image/*'}))
     class Meta:
         model=UploadPhoto
-        exclude = ('idgroup',)
+        fields = '__all__'
 
 class ExcelUpload(forms.Form):
 	ExcelFile=forms.FileField()
@@ -103,3 +103,18 @@ class ColumnsSelection(forms.Form):
     columns=forms.MultipleChoiceField(error_messages={'required': 'Choose at least one column'},
                                         widget=forms.CheckboxSelectMultiple())
 
+class GroupMemberEditForm(forms.ModelForm):
+
+	
+	nombreint= forms.CharField(label='Full Name',max_length= 80, widget=forms.TextInput(attrs=
+                                {'class':'form-control', 'style':'width:100%'}))
+	correoint= forms.EmailField(label= 'E-mail', max_length= 100, widget=forms.TextInput(attrs=
+                                {'class':'form-control',
+                                'placeholder':'example@correo.com',
+                                'style':'width:100%'}))
+	
+	foto1 = forms.ImageField(label='Add picture 1', required=False)
+	foto2 = forms.ImageField(label='Add picture 2', required=False)
+	class Meta:
+		model = GroupMembers
+		exclude = ('cod1', 'cod2')

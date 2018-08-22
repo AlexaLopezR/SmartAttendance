@@ -187,8 +187,7 @@ function PostFunction(){
     url: "/uppicture/",
     data: {'name': canvas.toDataURL('image/webp'), 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()}
   }).done(function(o) {
-      window.location.href = "/groups/";
-      alert("post");
+      window.location.href = "/attendance/";
 
 
     // If you want the file to be visible in the browser 

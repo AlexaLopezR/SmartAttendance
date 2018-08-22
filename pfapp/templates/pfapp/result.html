@@ -88,6 +88,28 @@
             <div style="text-align: center;">
               <img src="{{ fileroute }}" width="600" height="400" />
             </div>
+
+	  <table style="float: left">
+
+          <thead>
+      
+            <tr>
+              <th align="left"><STRONG>ID</STRONG></th>
+              </tr>
+          </thead>
+          <tbody>
+                   
+            {% for id in ids %}
+              <tr>
+                <td align="left">{{ id }}</td>
+              </tr>
+
+            {% endfor %}
+      
+           </tbody>
+        </table>
+
+
           <table style="float: left">
 
           <thead>
@@ -137,7 +159,7 @@
           <thead>
       
             <tr>
-              <th align="left"><STRONG>No Attended</STRONG></th>
+              <th align="left"><STRONG>Not Attended</STRONG></th>
             </tr>
           </thead>
               </div>
@@ -147,6 +169,28 @@
             {% for missings in missing %}
               <tr>
                 <td align="left">{{ missings }}</td>
+              </tr>
+
+            {% endfor %}
+      
+           </tbody>
+          </table>
+	
+          <table style="float: left">
+
+          <thead>
+      
+            <tr>
+              <th align="left"><STRONG>Unknown people</STRONG></th>
+            </tr>
+          </thead>
+              </div>
+
+          <tbody>
+                   
+            {% for unknown in unknowns %}
+              <tr>
+                <td align="left">{{ unknown }}</td>
               </tr>
 
             {% endfor %}
