@@ -191,7 +191,6 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	import numpy as np
 	import MySQLdb
 	from django.template import loader
-	from  more_itertools import unique_everseen
 	bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 	cursor = bd.cursor()
 	global grupo_selec
@@ -273,12 +272,12 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				
 				
 		 # Draw a box around the face using the Pillow module
-			draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
+			draw.rectangle(((left, top), (right, bottom+30)), outline=(0, 0, 255))
 
 		 # Draw a label with a name below the face
 			text_width, text_height = draw.textsize(ids_str)
-			draw.rectangle(((left- 10, bottom - 10 ), (right - 10, bottom - 10)), fill=(0, 0, 255), outline=(0, 0, 255))
-			draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(0, 150, 255), font=ImageFont.truetype('Pillow/Tests/fonts/FreeSansBold.ttf', 60))
+			draw.rectangle(((left, bottom - text_height ), (right, bottom + 31)), fill=(0, 0, 255), outline=(0, 0, 255))
+			draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(255, 255, 255), font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 60))
 
 
 		 # Remove the drawing library from memory as per the Pillow docs
