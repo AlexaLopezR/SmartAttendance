@@ -82,7 +82,8 @@
               <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Group Attendance</h2>
             </div>
           </header>
-        
+          <a href="{% url 'detail' groupid %}" align="left"> < < Go Back  </a>
+
         
           <body >
             <div style="text-align: center;">
@@ -126,6 +127,8 @@
               </tr>
 
             {% endfor %}
+                <td>              <h1 class="h4"><STRONG>Assistance ratio:{{percent}} </STRONG> </h1>
+</td>
       
            </tbody>
         </table>
@@ -194,12 +197,18 @@
               </tr>
 
             {% endfor %}
+
+            
       
            </tbody>
           </table>
+              
       </div>
+
             
           </body>
+
+
           
           <!-- Page Footer-->
           <footer class="main-footer">

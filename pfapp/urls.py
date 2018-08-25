@@ -29,6 +29,8 @@ urlpatterns= [
     url(r'^attendance/$',views.attendanceGenerator ,name='attendance'),
     url(r'^editgroup/$',views.editGroup.as_view(),name='editgroup'),
     url(r'^delete/(?P<part_id>.*)/$', views.Delete, name='delete_view'),
+    url(r'^deletegroup/(?P<group_id>.*)/$', views.DeleteGroup, name='delete_group'),
+
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
