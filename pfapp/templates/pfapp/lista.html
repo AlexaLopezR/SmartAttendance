@@ -125,7 +125,7 @@
                 <td><img src="{{ GroupMembers.foto1.url }}" width="200" height="200" >
                 </td>
                 <td><img src="{{ GroupMembers.foto2.url }}" width="200" height="200" ></td>
-                <td><a href="{% url 'delete_view' part_id=GroupMembers.id %}" ><i class="fa fa-trash"></i></a></td>
+                <td><a href="{% url 'delete_view' part_id=GroupMembers.id %}" onclick="return confirmaEliminacion()"><i class="fa fa-trash"></i></a></td>
 
               </tr>
 
@@ -140,7 +140,8 @@
 
 
             <a href="/editgroup/" align="center"> Edit Group</a>
-            <a href="{% url 'delete_group' group_id=GroupMembers.groupid_id %}" align="center"> Delete Group</a>
+            <a href="{% url 'delete_group' group_id=GroupMembers.groupid_id %}" align="center" onclick="return confirmaEliminacion()"> Delete Group</a>
+
 
           </div>
             
@@ -171,5 +172,15 @@
     <script src="{% static 'vendor/jquery-validation/jquery.validate.min.js' %}"></script>
     <!-- Main File-->
     <script src="{% static 'js/front.js' %}"></script>
+    <script >
+      function confirmaEliminacion() {
+        var res = confirm("You are about to delete the seleted item. If you wish to continue, click accept.");
+          if (res) {
+              return true;
+          } else {
+              return false;
+          }
+      }
+    </script>
   </body>
 </html>
