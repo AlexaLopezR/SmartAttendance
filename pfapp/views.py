@@ -240,7 +240,9 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		height = np.size(unknown_image, 0)
 		width = np.size(unknown_image, 1)
 		if (width<2000 and height<2000):
-			unknown_image = cv2.resize(unknown_image, (2500, 2000)) 
+			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+		if (width>2200 and height>2200):
+			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
 		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
 		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 		pil_image = Image.fromarray(unknown_image)
