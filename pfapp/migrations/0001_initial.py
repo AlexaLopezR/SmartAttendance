@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('nombreint', models.CharField(max_length=80)),
-                ('correoint', models.EmailField(unique=True, max_length=100)),
+                ('correoint', models.EmailField(max_length=100)),
                 ('foto1', models.ImageField(default=b'default.jpg', upload_to=pfapp.models.get_image_path)),
                 ('foto2', models.ImageField(default=b'default.jpg', upload_to=pfapp.models.get_image_path)),
                 ('cod1', models.TextField()),
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('nombre', models.CharField(max_length=80)),
-                ('correo', models.EmailField(unique=True, max_length=100)),
+                ('correo', models.EmailField(max_length=100)),
                 ('contrasena', models.CharField(max_length=32)),
             ],
         ),

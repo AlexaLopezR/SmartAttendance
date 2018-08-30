@@ -110,8 +110,8 @@ def codificacion(request): #Vista para obtener el vector con las caracteristicas
 	y=[]
 	pk=[]
 	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers WHERE  groupid_id=( SELECT MAX(groupid_id) FROM pfapp_groupmembers )'):
-		dire1=os.path.join('/home/dylan/SmartAttendance/static/media/', str(p.foto1))
-		dire2=os.path.join('/home/dylan/SmartAttendance/static/media/', str(p.foto2))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto1))
+		dire2=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto2))
 		x.append(dire1)
 		y.append(dire2)
 		pk.append(p.id)
@@ -157,7 +157,7 @@ def pictureUpload(request): #Vista para la foto tomada desde camara
 
 			f.close()
 			print("guarda foto")
-			bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 			print("conexion base")
 			cursor = bd.cursor()
 			print("se hizo cursor")
@@ -191,7 +191,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	import numpy as np
 	import MySQLdb
 	from django.template import loader
-	bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+	bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 	cursor = bd.cursor()
 	global grupo_selec
 
@@ -228,15 +228,16 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	tol=0.6
 	james=B
 	print(james)
+	print(len(james))
 	for p in UploadPhoto.objects.raw('SELECT * FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
-		dire1=os.path.join('/home/dylan/SmartAttendance/static/media/', str(p.picture))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture))
 		unknown_image = face_recognition.load_image_file(dire1)
 		image=Image.fromarray(unknown_image)
 		enhancer_object = ImageEnhance.Contrast(image)
 		enhancer_object = ImageEnhance.Color(image)
 		out = enhancer_object.enhance(1.3)
-		out.save('/home/dylan/SmartAttendance/static/media/imagenmejorada.jpg')
-		unknown_image = face_recognition.load_image_file('/home/dylan/SmartAttendance/static/media/imagenmejorada.jpg')
+		out.save('/home/ubuntu/SmartAttendance/static/media/imagenmejorada.jpg')
+		unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada.jpg')
 		height = np.size(unknown_image, 0)
 		width = np.size(unknown_image, 1)
 		if (width<2000 and height<2000):
@@ -287,10 +288,10 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		global grupo_selec
 		 #  Display the resulting image
 		date=time.strftime("%H:%M:%S")
-		fileroute="/home/dylan/SmartAttendance/static/media/resultimage" + date + ".png" 
+		fileroute="/home/ubuntu/SmartAttendance/static/media/resultimage" + date + ".png" 
 		pil_image.save(fileroute)
 		fileroute2="/media/resultimage"+date+".png"
-		bd= MySQLdb.connect("127.0.0.1","root", "1dkwhyso","PF")
+		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 		cursor = bd.cursor()
 		cursor.execute("INSERT into pfapp_resultpicture (result, idgroup_id) values ('%s','%s')" %  (fileroute ,grupo_selec))
        	#(pk,class_dir,x[p])
@@ -300,16 +301,26 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		missing=list(missing)
 		print(ids_list)
 		print(missing)
-		if len(name_list)==0:
+		print(len(missing))
+		print(ids)
+		if ids==0:
 			percent=0
 			percent=str(percent)+"%"
+			print(percent)
+			print("a")
 		else:
 			if len(missing)==0:
 				percent=100
 				percent=str(percent)+"%"
+				print(percent)
+				print("b")
 			else:
-				percent=(len(missing)/len(name_list))*100
+				num=ids
+				den=ids+len(missing)
+				percent=(num*100)/den
 				percent=str(percent)+"%"
+				print(percent)
+				print("c")
 		context={'groupid': grupo_selec, 'names':name_list, 'missing':missing, 'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent}
 	    
 	return render(request, 'pfapp/result.html', context)
@@ -534,8 +545,8 @@ def codificacionEdit(request): #Vista para obtener el vector con las caracterist
 	y=[]
 	pk=[]
 	for p in GroupMembers.objects.raw('SELECT * FROM pfapp_groupmembers  WHERE groupid_id = %s', [grupo_selec]):
-		dire1=os.path.join('/home/dylan/SmartAttendance/static/media/', str(p.foto1))
-		dire2=os.path.join('/home/dylan/SmartAttendance/static/media/', str(p.foto2))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto1))
+		dire2=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.foto2))
 		x.append(dire1)
 		y.append(dire2)
 		pk.append(p.id)

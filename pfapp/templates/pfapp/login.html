@@ -48,8 +48,12 @@
                 <div class="content">
                   <form method="post">
                     <small>*If you are already registered, sign in </small>
+                    <div class="prueba_clase">
                     {% csrf_token %}
+		    </div>
+		    <div class="Prueba_2">
                     {{ form.as_p }}
+		    </div>
                     <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Log in</button>
                   </form><a href="#" class="forgot-pass">Forgot your password?</a><br><small>Don't have an account? </small><a href="/register" class="signup"> Sign up ></a>
                 </div>
