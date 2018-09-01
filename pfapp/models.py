@@ -31,8 +31,8 @@ class GroupMembers(models.Model):
 	groupid=models.ForeignKey(Group)
 	nombreint= models.CharField(max_length= 80)
 	correoint= models.EmailField(max_length= 100, unique=False)
-	foto1= models.ImageField(upload_to=get_image_path,default='default.jpg')
-	foto2=models.ImageField(upload_to=get_image_path,default='default.jpg')
+	foto1= models.ImageField(upload_to=get_image_path,default='default.jpg', null= False,blank= False)
+	foto2=models.ImageField(upload_to=get_image_path,default='default.jpg', blank= False, null=False)
 	cod1= models.TextField()
 	cod2= models.TextField(null=True)
 	def __str__(self):
@@ -40,8 +40,12 @@ class GroupMembers(models.Model):
 
 
 class UploadPhoto(models.Model):
-	picture= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
+	picture1= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
+	picture2= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
+
 	
 class ResultPicture(models.Model):
-	result=models.ImageField(upload_to=get_image_path,default='default.jpg')
+	result1=models.ImageField(upload_to=get_image_path,default='default.jpg')
+	result2=models.ImageField(upload_to=get_image_path,default='default.jpg')
+
 	idgroup=models.ForeignKey(Group, default=1)

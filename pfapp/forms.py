@@ -55,7 +55,6 @@ class EditForm(UserChangeForm):
 				}
 	
 class GroupMemberForm(forms.ModelForm):
-
 	
 	nombreint= forms.CharField(label='Full Name',max_length= 80, widget=forms.TextInput(attrs=
                                 {'class':'form-control', 'style':'width:100%'}))
@@ -74,7 +73,9 @@ GroupMemberFormSet = inlineformset_factory(Group, GroupMembers,
                                             form=GroupMemberForm, extra=1)
 
 class UploadPhotoForm(forms.ModelForm):
-    picture=forms.ImageField(label='Add Group Picture', widget=forms.FileInput(attrs=
+    picture1=forms.ImageField(label='Add First Group Picture', widget=forms.FileInput(attrs=
+                                {'capture':'camera', 'accept':'image/*'}))
+    picture2=forms.ImageField(label='Add Second Group Picture', widget=forms.FileInput(attrs=
                                 {'capture':'camera', 'accept':'image/*'}))
     class Meta:
         model=UploadPhoto

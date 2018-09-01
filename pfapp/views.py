@@ -85,8 +85,10 @@ class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
 		else:
 			data['groupmembers'] = GroupMemberFormSet()
 		return data
+
 	def form_valid(self, form):
-		context = self.get_context_data()      
+		context = self.get_context_data() 
+		var=0     
 		groupmembers = context['groupmembers']
 		with transaction.atomic():
 			form.instance.user = self.request.user
@@ -94,6 +96,12 @@ class GroupGroupMemberCreate(CreateView): #Vista para el formulario del grupo
       		if groupmembers.is_valid():
       			groupmembers.instance = self.object
       			groupmembers.save()
+      		else:
+      			var=1
+      			message= "There is missing information. Verify the input data."
+      			context={'message':message, 'var':var, 'form': form, 'groupmembers': groupmembers}
+      			url = reverse('profile-list')
+      			return render(self.request, 'pfapp/group_form.html', context)
 		return super(GroupGroupMemberCreate, self).form_valid(form)
 
 
@@ -230,7 +238,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	print(james)
 	print(len(james))
 	for p in UploadPhoto.objects.raw('SELECT * FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
-		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture))
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture1))
 		unknown_image = face_recognition.load_image_file(dire1)
 		image=Image.fromarray(unknown_image)
 		enhancer_object = ImageEnhance.Contrast(image)
@@ -288,12 +296,81 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		global grupo_selec
 		 #  Display the resulting image
 		date=time.strftime("%H:%M:%S")
-		fileroute="/home/ubuntu/SmartAttendance/static/media/resultimage" + date + ".png" 
+		fileroute="/home/ubuntu/SmartAttendance/static/media/resultimage1" + date + ".png" 
 		pil_image.save(fileroute)
-		fileroute2="/media/resultimage"+date+".png"
+		fileroute2="/media/resultimage1"+date+".png"
+		print(name_list)
+	for p in UploadPhoto.objects.raw('SELECT id, picture2 FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
+		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture2))
+		print(dire1)
+		print("segunda foto")
+		unknown_image = face_recognition.load_image_file(dire1)
+		image=Image.fromarray(unknown_image)
+		enhancer_object = ImageEnhance.Contrast(image)
+		enhancer_object = ImageEnhance.Color(image)
+		out = enhancer_object.enhance(1.3)
+		out.save('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
+		unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
+		height = np.size(unknown_image, 0)
+		width = np.size(unknown_image, 1)
+		if (width<2000 and height<2000):
+			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+		if (width>2200 and height>2200):
+			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
+		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+		pil_image = Image.fromarray(unknown_image)
+
+		#  Create a Pillow ImageDraw Draw instance to draw with
+		draw = ImageDraw.Draw(pil_image)
+		
+		
+		# Loop through each face found in the unknown image
+		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+		# See if the face is a match for the known face(s)
+			matches = face_recognition.face_distance(known_face_encodings, face_encoding)
+			name = "Unknown"
+			ids_str="Unknown"
+			if(min(matches)<=tol):
+				mindispos = matches.tolist().index(min(matches))
+				name = known_face_names[mindispos]
+				if(name in name_list):
+					ids_str=str(name_list.index(name)+1)
+				else:
+					name_list.append(name)
+					ids=ids+1
+					ids_str=str(ids)
+					ids_list.append(ids)
+					print("lalal")
+			else:
+				uf=uf+1
+				unknown_list.append(name+str(uf))
+				ids_str="U"+str(uf)
+				
+				
+		 # Draw a box around the face using the Pillow module
+			draw.rectangle(((left, top), (right, bottom+30)), outline=(0, 0, 255))
+
+		 # Draw a label with a name below the face
+			text_width, text_height = draw.textsize(ids_str)
+			draw.rectangle(((left, bottom - text_height ), (right, bottom + 31)), fill=(0, 0, 255), outline=(0, 0, 255))
+			draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(255, 255, 255), font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 60))
+
+
+		 # Remove the drawing library from memory as per the Pillow docs
+		del draw
+		global grupo_selec
+		print(name_list)
+		 #  Display the resulting image
+		date=time.strftime("%H:%M:%S")
+		fileroute3="/home/ubuntu/SmartAttendance/static/media/resultimage2" + date + ".png" 
+		pil_image.save(fileroute3)
+		fileroute4="/media/resultimage2"+date+".png"
+
+
 		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 		cursor = bd.cursor()
-		cursor.execute("INSERT into pfapp_resultpicture (result, idgroup_id) values ('%s','%s')" %  (fileroute ,grupo_selec))
+		cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id) values ('%s','%s','%s')" %  (fileroute, fileroute3 ,grupo_selec))
        	#(pk,class_dir,x[p])
 		bd.commit()
 		print(name_list)
@@ -307,21 +384,18 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			percent=0
 			percent=str(percent)+"%"
 			print(percent)
-			print("a")
 		else:
 			if len(missing)==0:
 				percent=100
 				percent=str(percent)+"%"
 				print(percent)
-				print("b")
 			else:
 				num=ids
 				den=ids+len(missing)
 				percent=(num*100)/den
 				percent=str(percent)+"%"
 				print(percent)
-				print("c")
-		context={'groupid': grupo_selec, 'names':name_list, 'missing':missing, 'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent}
+		context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent}
 	    
 	return render(request, 'pfapp/result.html', context)
 	
