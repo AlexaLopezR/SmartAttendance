@@ -47,5 +47,8 @@ class UploadPhoto(models.Model):
 class ResultPicture(models.Model):
 	result1=models.ImageField(upload_to=get_image_path,default='default.jpg')
 	result2=models.ImageField(upload_to=get_image_path,default='default.jpg')
-
 	idgroup=models.ForeignKey(Group, default=1)
+	assisted=models.CharField(max_length=1000)
+	missing=models.CharField(max_length=1000)
+	fecha=models.CharField(max_length=1000)
+	

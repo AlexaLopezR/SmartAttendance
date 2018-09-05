@@ -30,6 +30,8 @@ urlpatterns= [
     url(r'^editgroup/$',views.editGroup.as_view(),name='editgroup'),
     url(r'^delete/(?P<part_id>.*)/$', views.Delete, name='delete_view'),
     url(r'^deletegroup/(?P<group_id>.*)/$', views.DeleteGroup, name='delete_group'),
+    url(r'^history/$', views.history, name='history'),
+
 
 
 ]

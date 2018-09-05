@@ -72,8 +72,8 @@
           </div>
           <!-- Sidebar Navidation Menus--><span class="heading">Menú</span>
           <ul class="list-unstyled">
-                    <li ><a href="/profile/"> <i class="far fa-user"></i>Profile</a></li>
-                    <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
+            <li ><a href="/profile/"> <i class="far fa-user"></i>Profile</a></li>
+            <li class="active"><a href="/groups/"> <i class="fas fa-users"></i>Groups</a></li>
                                         
           </ul>
         </nav>
@@ -135,12 +135,9 @@
            </tbody>
           </table>
           <div class="col-sm-12" align="center">
-            <a href="/history/" align="center"> Group register  </a>
-            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;     
-
-
-            <a href="/editgroup/" align="center"> Edit Group</a>
-            <a href="{% url 'delete_group' group_id=GroupMembers.groupid_id %}" align="center" onclick="return confirmaEliminacion()"> Delete Group</a>
+            <a href="/history/" align="center"> History |   </a>
+            <a href="/editgroup/" align="center"> Edit Group | </a>
+            <a href="{% url 'delete_group' group_id=GroupMembers.groupid_id %}" align="center" onclick="return confirmaEliminacion()"> Delete Group | </a>
 
 
           </div>
@@ -160,7 +157,7 @@
               </div>
             </div>
           </footer>
-        </div>s
+        </div>
       </div>
     </div>
     <!-- JavaScript files-->

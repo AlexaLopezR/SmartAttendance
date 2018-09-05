@@ -16,6 +16,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.hashers import PBKDF2PasswordHasher
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.mail import send_mail
 import time
 from .datos import *
 from .forms import * 
@@ -187,7 +188,7 @@ class GroupPhotoEntry(CreateView): #Vista para cargar foto de asistencia
 
 def attendanceGenerator(request): #Vista para generar asistencia
 	from os import listdir
-	import os
+	import os, datetime
 	from os.path import join
 	import pickle
 	from PIL import Image, ImageFont,  ImageDraw,ImageEnhance
@@ -363,23 +364,21 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		print(name_list)
 		 #  Display the resulting image
 		date=time.strftime("%H:%M:%S")
+		feche=datetime.datetime.today()
+		print(feche)
 		fileroute3="/home/ubuntu/SmartAttendance/static/media/resultimage2" + date + ".png" 
 		pil_image.save(fileroute3)
 		fileroute4="/media/resultimage2"+date+".png"
 
-
-		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
-		cursor = bd.cursor()
-		cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id) values ('%s','%s','%s')" %  (fileroute, fileroute3 ,grupo_selec))
        	#(pk,class_dir,x[p])
-		bd.commit()
+		
 		print(name_list)
 		missing=set(james)-set(name_list)
 		missing=list(missing)
-		print(ids_list)
-		print(missing)
-		print(len(missing))
-		print(ids)
+		#print(ids_list)
+		#print(missing)
+		#print(len(missing))
+		#print(ids)
 		if ids==0:
 			percent=0
 			percent=str(percent)+"%"
@@ -395,10 +394,40 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				percent=(num*100)/den
 				percent=str(percent)+"%"
 				print(percent)
+		missings = "\n".join(missing)
+		name_lists = "\n".join(name_list)
+		print(missings)
+		print(name_lists)
+		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+		cursor = bd.cursor()
+		cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing) values ('%s','%s','%s','%s','%s','%s')" %  (fileroute2, fileroute4 ,grupo_selec, feche, name_lists, missings))
+		bd.commit()
 		context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent}
-	    
+	for a in name_list:
+		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
+			emailassist=[]
+			emailassist.append(n.correoint)	
+			print(emailassist[0])
+			print(type(emailassist))
+			send_mail('Asistencia a clase', 'Confirmada su asistencia a clase', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+
+	for a in missing:
+		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
+			emailassist=[]
+			emailassist.append(n.correoint)	
+			print(emailassist[0])
+			print(type(emailassist))
+			send_mail('Inasistencia a clase', 'Se confirmasu inasistencia a la clase de hoy. Si esta informacion no es correcta, contacte a su profesor correspondiente', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 	return render(request, 'pfapp/result.html', context)
-	
+
+def history(request):
+	global grupo_selec
+	grupo_id= grupo_selec
+	query_group=ResultPicture.objects.filter(idgroup=grupo_selec)
+	context={
+	'query_group':query_group
+	}
+	return render(request,'pfapp/history.html',context)
 	
 def loadExcel(request):
 
