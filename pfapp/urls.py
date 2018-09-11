@@ -31,7 +31,8 @@ urlpatterns= [
     url(r'^delete/(?P<part_id>.*)/$', views.Delete, name='delete_view'),
     url(r'^deletegroup/(?P<group_id>.*)/$', views.DeleteGroup, name='delete_group'),
     url(r'^history/$', views.history, name='history'),
-
+    url(r'^historydetail/(?P<fecha>.*)$', views.historyDetail, name='historydetail'),
+    url(r'^editlist/(?P<fecha>.*)$', views.editList, name='editlist'),
 
 
 ]

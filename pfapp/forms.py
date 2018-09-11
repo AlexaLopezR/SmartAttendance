@@ -75,7 +75,7 @@ GroupMemberFormSet = inlineformset_factory(Group, GroupMembers,
 class UploadPhotoForm(forms.ModelForm):
     picture1=forms.ImageField(label='Add First Group Picture', widget=forms.FileInput(attrs=
                                 {'capture':'camera', 'accept':'image/*'}))
-    picture2=forms.ImageField(label='Add Second Group Picture', widget=forms.FileInput(attrs=
+    picture2=forms.ImageField(label='Add Second Group Picture (optional)', required=False, widget=forms.FileInput(attrs=
                                 {'capture':'camera', 'accept':'image/*'}))
     class Meta:
         model=UploadPhoto

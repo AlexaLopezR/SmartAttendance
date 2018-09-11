@@ -85,31 +85,31 @@
          
         
           <body >
+          <h4><STRONG>*Note: M = Modified record</STRONG></h4>
           
           {% for ResultPicture in query_group %}
-            <div style="text-align: center;" class="col-sm-12">
-                  <h2 class="h4"><STRONG>{{ ResultPicture.fecha }}</STRONG></h2>
+            <div style="text-align: left;" class="col-sm-12">
+                  <a href="{% url 'historydetail' ResultPicture.fecha %}">{{ ResultPicture.fecha }}</a>
                 
                 </div>
-            <div style="text-align: left;" class="col-sm-12"> 
-              <img src="{{ ResultPicture.result1.url }}" width="500" height="400" />
-                              
-              <img src="{{ ResultPicture.result2.url }}"width="500" height="400">
-            </div>
-            <div >
+           
+            <div class="col-sm-12">
             <div style="text-align: left;">
               <table >
                 <thead>  
                   <tr>
+                    <th align="left"><STRONG>ID</STRONG></th>
                     <th align="left"><STRONG>Attended</STRONG></th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
+                    <td align="left">{{ ResultPicture.idassisted|linebreaks }} </td>
                     <td align="left">{{ ResultPicture.assisted|linebreaks }} </td>
                   </tr>
                 </tbody>
               </table>
+              
               <table >
                 <thead>  
                   <tr>

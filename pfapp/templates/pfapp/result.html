@@ -86,9 +86,18 @@
 
         
           <body >
-            <div style="text-align: center;">
-              <img src="{{ fileroute }}" width="600" height="400" />
-              <img src="{{ fileroute2 }}"width="600" height="400">
+            <div style="text-align: center;" class="col-sm-12">
+                <h2 class="h4"><STRONG>Attendance Result</STRONG></h2>
+                </div>
+            {% if fileroute2 != Null %}
+              <div style="text-align: left;" class="col-sm-12"> 
+              <img src="{{ fileroute }}" width="500" height="400" />
+              <img src="{{ fileroute2 }}"width="500" height="400">
+            {% else %}
+              <div style="text-align: center;" class="col-sm-12"> 
+              <img src="{{ fileroute }}" width="500" height="400" />
+
+              {% endif %}
             </div>
 
 	  <table style="float: left">

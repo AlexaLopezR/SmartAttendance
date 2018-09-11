@@ -41,7 +41,7 @@ class GroupMembers(models.Model):
 
 class UploadPhoto(models.Model):
 	picture1= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
-	picture2= models.ImageField(upload_to="pfapp/images/",default='default.jpg')
+	picture2= models.ImageField(upload_to="pfapp/images/",null=True)
 
 	
 class ResultPicture(models.Model):
@@ -51,4 +51,4 @@ class ResultPicture(models.Model):
 	assisted=models.CharField(max_length=1000)
 	missing=models.CharField(max_length=1000)
 	fecha=models.CharField(max_length=1000)
-	
+	idassisted=models.CharField(max_length=1000)

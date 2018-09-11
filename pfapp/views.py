@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, HttpResponse
 from django.http import HttpResponseRedirect, HttpResponse
 
@@ -264,6 +265,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		ids=0
 		uf=0
 		unknown_list=[]
+		idassisted=[]
 		# Loop through each face found in the unknown image
 		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
 		# See if the face is a match for the known face(s)
@@ -276,6 +278,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				name_list.append(name)
 				ids=ids+1
 				ids_str=str(ids)
+				idassisted.append(ids_str)
 				ids_list.append(ids)
 			else:
 				uf=uf+1
@@ -301,77 +304,80 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		pil_image.save(fileroute)
 		fileroute2="/media/resultimage1"+date+".png"
 		print(name_list)
+		flag=0
 	for p in UploadPhoto.objects.raw('SELECT id, picture2 FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
-		dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture2))
-		print(dire1)
-		print("segunda foto")
-		unknown_image = face_recognition.load_image_file(dire1)
-		image=Image.fromarray(unknown_image)
-		enhancer_object = ImageEnhance.Contrast(image)
-		enhancer_object = ImageEnhance.Color(image)
-		out = enhancer_object.enhance(1.3)
-		out.save('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
-		unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
-		height = np.size(unknown_image, 0)
-		width = np.size(unknown_image, 1)
-		if (width<2000 and height<2000):
-			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
-		if (width>2200 and height>2200):
-			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
-		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
-		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
-		pil_image = Image.fromarray(unknown_image)
+		if(p.picture2 != None):
+			flag=1
+			dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture2))
+			print(dire1)
+			print("segunda foto")
+			unknown_image = face_recognition.load_image_file(dire1)
+			image=Image.fromarray(unknown_image)
+			enhancer_object = ImageEnhance.Contrast(image)
+			enhancer_object = ImageEnhance.Color(image)
+			out = enhancer_object.enhance(1.3)
+			out.save('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
+			unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
+			height = np.size(unknown_image, 0)
+			width = np.size(unknown_image, 1)
+			if (width<2000 and height<2000):
+				unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+			if (width>2200 and height>2200):
+				unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+			face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
+			face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
+			pil_image = Image.fromarray(unknown_image)
 
-		#  Create a Pillow ImageDraw Draw instance to draw with
-		draw = ImageDraw.Draw(pil_image)
-		
-		
-		# Loop through each face found in the unknown image
-		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-		# See if the face is a match for the known face(s)
-			matches = face_recognition.face_distance(known_face_encodings, face_encoding)
-			name = "Unknown"
-			ids_str="Unknown"
-			if(min(matches)<=tol):
-				mindispos = matches.tolist().index(min(matches))
-				name = known_face_names[mindispos]
-				if(name in name_list):
-					ids_str=str(name_list.index(name)+1)
+			#  Create a Pillow ImageDraw Draw instance to draw with
+			draw = ImageDraw.Draw(pil_image)
+			
+			
+			# Loop through each face found in the unknown image
+			for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+			# See if the face is a match for the known face(s)
+				matches = face_recognition.face_distance(known_face_encodings, face_encoding)
+				name = "Unknown"
+				ids_str="Unknown"
+				if(min(matches)<=tol):
+					mindispos = matches.tolist().index(min(matches))
+					name = known_face_names[mindispos]
+					if(name in name_list):
+						ids_str=str(name_list.index(name)+1)
+					else:
+						name_list.append(name)
+						ids=ids+1
+						ids_str=str(ids)
+						ids_list.append(ids)
+						idassisted.append(ids_str)
+						print("lalal")
 				else:
-					name_list.append(name)
-					ids=ids+1
-					ids_str=str(ids)
-					ids_list.append(ids)
-					print("lalal")
-			else:
-				uf=uf+1
-				unknown_list.append(name+str(uf))
-				ids_str="U"+str(uf)
-				
-				
-		 # Draw a box around the face using the Pillow module
-			draw.rectangle(((left, top), (right, bottom+30)), outline=(0, 0, 255))
+					uf=uf+1
+					unknown_list.append(name+str(uf))
+					ids_str="U"+str(uf)
+					
+					
+			 # Draw a box around the face using the Pillow module
+				draw.rectangle(((left, top), (right, bottom+30)), outline=(0, 0, 255))
 
-		 # Draw a label with a name below the face
-			text_width, text_height = draw.textsize(ids_str)
-			draw.rectangle(((left, bottom - text_height ), (right, bottom + 31)), fill=(0, 0, 255), outline=(0, 0, 255))
-			draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(255, 255, 255), font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 60))
+			 # Draw a label with a name below the face
+				text_width, text_height = draw.textsize(ids_str)
+				draw.rectangle(((left, bottom - text_height ), (right, bottom + 31)), fill=(0, 0, 255), outline=(0, 0, 255))
+				draw.text((left + 6, bottom - text_height - 10), ids_str,fill=(255, 255, 255), font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 60))
 
 
 		 # Remove the drawing library from memory as per the Pillow docs
-		del draw
-		global grupo_selec
-		print(name_list)
-		 #  Display the resulting image
-		date=time.strftime("%H:%M:%S")
-		feche=datetime.datetime.today()
-		print(feche)
-		fileroute3="/home/ubuntu/SmartAttendance/static/media/resultimage2" + date + ".png" 
-		pil_image.save(fileroute3)
-		fileroute4="/media/resultimage2"+date+".png"
+		if(flag == 1):
+			del draw
+			global grupo_selec
+			print(name_list)
+			 #  Display the resulting image
+			date=time.strftime("%H:%M:%S")
+			fileroute3="/home/ubuntu/SmartAttendance/static/media/resultimage2" + date + ".png" 
+			pil_image.save(fileroute3)
+			fileroute4="/media/resultimage2"+date+".png"
 
        	#(pk,class_dir,x[p])
-		
+		feche=datetime.datetime.today()
 		print(name_list)
 		missing=set(james)-set(name_list)
 		missing=list(missing)
@@ -396,20 +402,35 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				print(percent)
 		missings = "\n".join(missing)
 		name_lists = "\n".join(name_list)
+		ids_lists = "\n".join(idassisted)
 		print(missings)
 		print(name_lists)
-		bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
-		cursor = bd.cursor()
-		cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing) values ('%s','%s','%s','%s','%s','%s')" %  (fileroute2, fileroute4 ,grupo_selec, feche, name_lists, missings))
-		bd.commit()
-		context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent}
+		
+		if(flag == 1):
+			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+			cursor = bd.cursor()
+			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted) values ('%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, fileroute4 ,grupo_selec, feche, name_lists, missings, ids_lists))
+			bd.commit()
+			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent, 'flag':flag}
+		else:
+			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
+			cursor = bd.cursor()
+			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted) values ('%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, None ,grupo_selec, feche, name_lists, missings, ids_lists))
+			bd.commit()
+			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent, 'flag':flag}
+		query_group=Group.objects.filter(id=grupo_selec)
+		print(query_group[0])
+		messageassisted= "Se confirma su asistencia a la clase: " + str(query_group[0]) + ", en la fecha: " + str(feche) 
+		messagemissed= "Se confirma su inasistencia a la clase: " + str(query_group[0]) + ", en la fecha: " + str(feche) + " . Si esta información no es correcta, favor acercarse al administrador del grupo" 
+
+		print("nombre grupo")
 	for a in name_list:
 		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
 			emailassist=[]
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Asistencia a clase', 'Confirmada su asistencia a clase', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			send_mail('Asistencia a clase', messageassisted, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 
 	for a in missing:
 		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
@@ -417,7 +438,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Inasistencia a clase', 'Se confirmasu inasistencia a la clase de hoy. Si esta informacion no es correcta, contacte a su profesor correspondiente', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			send_mail('Inasistencia a clase', 'Se confirma su inasistencia a la clase de hoy. Si esta informacion no es correcta, contacte a su profesor correspondiente', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 	return render(request, 'pfapp/result.html', context)
 
 def history(request):
@@ -428,6 +449,15 @@ def history(request):
 	'query_group':query_group
 	}
 	return render(request,'pfapp/history.html',context)
+	
+def historyDetail(request, fecha):
+	global grupo_selec
+	group_grupo=grupo_selec
+	query_group=ResultPicture.objects.filter(idgroup=grupo_selec, fecha=fecha)
+	context={
+	'query_group':query_group
+	}
+	return render(request,'pfapp/historydetail.html',context)
 	
 def loadExcel(request):
 
@@ -686,3 +716,63 @@ def DeleteGroup(request,group_id =None):
 	return HttpResponseRedirect(reverse('profile-list'))
 
 
+def editList(request, fecha): #Vista para editar la lista de asistencia
+	import MySQLdb
+	c=0
+	d=0
+	
+	global grupo_selec
+
+	for p in ResultPicture.objects.raw('SELECT id, assisted, missing, idassisted FROM pfapp_resultpicture WHERE idgroup_id  = %s AND fecha = %s',[grupo_selec, fecha]):
+		a=p.assisted
+		b=p.missing
+		c=p.idassisted
+	attended=a.split("\n")
+	idassisted=c.split("\n")
+	print("attended: "+ str(attended))
+	missing=b.split("\n")
+	print("missing: "+str(missing))
+	if(len(a)==0):
+		c=0
+	else:
+		c=1
+
+	if(len(b)==0):
+		d=0
+	else:
+		d=1
+	memberselect=[]
+	for n in GroupMembers.objects.raw('SELECT id, nombreint FROM pfapp_groupmembers WHERE groupid_id = %s', [grupo_selec]):
+		name=n.nombreint
+		memberselect.append(str(name))
+	notatt=set(memberselect)-set(attended)
+	if request.method == "POST":
+		checked = request.POST.getlist('checks[]')
+		print("checked= "+str(set(checked)))
+		print("set attended= "+str(set(attended)))
+		newmissing = set(memberselect)-set(checked)
+		newids=[]
+		for n in range(len(checked)):
+			for m in range(len(attended)):
+				if (checked[n]==attended[m]):
+					newid=m+1
+					newids.append(str(newid))
+		
+		for n in range(abs(len(checked)-len(attended))):
+			newids.append("M")
+				
+		print(newids)
+		print(newmissing)
+		newmissing="\n".join(newmissing)
+		newids="\n".join(newids)
+		ResultPicture.objects.filter(fecha =fecha).update(missing =newmissing)
+		checked ="\n".join(checked)
+		ResultPicture.objects.filter(fecha =fecha).update(idassisted =newids)
+		ResultPicture.objects.filter(fecha =fecha).update(assisted =checked)
+		query_group=ResultPicture.objects.filter(idgroup=grupo_selec)
+		context={'query_group':query_group}
+		return render(request,'pfapp/history.html', context)
+
+	context = {'attended':attended, 'missing':notatt, 'c':c, 'd':d}
+
+	return render(request,'pfapp/editlist.html', context)

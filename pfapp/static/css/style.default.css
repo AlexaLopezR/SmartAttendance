@@ -17,6 +17,12 @@ https://bootstrapious.com/p/admin-template
 body {
   overflow-x: hidden;
 }
+.errorlist
+    {
+        color: red;
+        font-weight: bold;
+    }
+
 
 a,
 i,
