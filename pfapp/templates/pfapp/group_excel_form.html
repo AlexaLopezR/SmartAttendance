@@ -34,14 +34,8 @@
     <div class="page">
       <!-- Main Navbar-->
       <header class="header">
-        <nav class="navbar">
+        <nav class="navbar"  style="background: #000">
           <!-- Search Box-->
-          <div class="search-box">
-            <button class="dismiss"><i class="icon-close"></i></button>
-            <form id="searchForm" action="#" role="search">
-              <input type="search" placeholder="What are you looking for..." class="form-control">
-            </form>
-          </div>
           <div class="container-fluid">
             <div class="navbar-holder d-flex align-items-center justify-content-between">
               <!-- Navbar Header-->
@@ -61,13 +55,13 @@
           </div>
         </nav>
       </header>
-      <div class="page-content d-flex align-items-stretch"> 
+      <div class="page-content d-flex align-items-stretch"  style="background: #fff"> 
         <!-- Side Navbar -->
         <nav class="side-navbar">
           <!-- Sidebar Header-->
           <div class="sidebar-header d-flex align-items-center">
-            <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
-            <div class="title">
+             <div class="avatar"><img src="/media/elephant.png" alt="..." class="img-fluid rounded-circle"></div>
+            <div class="title" style="background: #fff">
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
@@ -79,14 +73,15 @@
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
-          <header class="page-header">
+          <header class="page-header" style="background: #2980b9">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="far fa-plus-square"></i>New Group</h2>
+              <h2 class="no-margin-bottom" style="color: #fff"><i class="far fa-plus-square"></i>New Group</h2>
             </div>
           </header>
           <br>
         <div class="col-md-16">
           <form action="" method="post" enctype="multipart/form-data">
+            <a href="/pickColumns/"> < < Go Back </a>
               {% csrf_token %}
               {{ form.as_p }}
               <h4> {{ instance.user }}</h4>
@@ -121,34 +116,10 @@
               {% endfor %}
             </table>
             <style type="text/css">.horizontal { display: inline}</style>
-              <dl>
-              <ul>
-                <li class="horizontal"> <a href="/pickColumns/"> < < Go Back </a></li>
-                &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;  
-               <li class="horizontal"><button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Save Group</button> </li>
-              </ul>
-            </dl>
-            
+            <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Save Group</button>       
 
           </form>
         </div>
-              
-          
-
-          <!-- Page Footer-->
-          <footer class="main-footer">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-sm-6">
-                  <p>SmartAttendance &copy; 2018</p>
-                </div>
-                <div class="col-sm-6 text-right">
-                  <p>Design by <a href="https://bootstrapious.com/admin-templates" class="external">Bootstrapious</a></p>
-                  <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
-                </div>
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
     </div>

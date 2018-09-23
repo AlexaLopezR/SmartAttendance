@@ -30,14 +30,8 @@
     <div class="page">
       <!-- Main Navbar-->
       <header class="header">
-        <nav class="navbar">
-          <!-- Search Box-->
-          <div class="search-box">
-            <button class="dismiss"><i class="icon-close"></i></button>
-            <form id="searchForm" action="#" role="search">
-              <input type="search" placeholder="What are you looking for..." class="form-control">
-            </form>
-          </div>
+        <nav class="navbar"  style="background: #000">
+          
           <div class="container-fluid">
             <div class="navbar-holder d-flex align-items-center justify-content-between">
               <!-- Navbar Header-->
@@ -58,13 +52,13 @@
           </div>
         </nav>
       </header>
-      <div class="page-content d-flex align-items-stretch"> 
+      <div class="page-content d-flex align-items-stretch" style="background: #fff"> 
         <!-- Side Navbar -->
         <nav class="side-navbar">
           <!-- Sidebar Header-->
           <div class="sidebar-header d-flex align-items-center">
-            <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
-            <div class="title">
+            <div class="avatar"><img src="/media/elephant.png" alt="..." class="img-fluid rounded-circle"></div>
+            <div class="title" style="background: #fff">
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
@@ -77,33 +71,44 @@
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
-          <header class="page-header">
+          <header class="page-header" style="background: #2980b9">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Group Attendance</h2>
+              <h2 class="no-margin-bottom" style="color: #fff"><i class="fas fa-users"></i>Attendance Detail</h2>
             </div>
           </header>
          
         
           <body >
-          
-          {% for ResultPicture in query_group %}
-            <div style="text-align: center;" class="col-sm-12">
-                  <h2 class="h4"><STRONG>{{ ResultPicture.fecha }}</STRONG></h2>
-                
-                </div>
-            {% if ResultPicture.result2.url != "/media/None" %}
-              <div style="text-align: left;" class="col-sm-12"> 
-              <img src="{{ ResultPicture.result1.url }}" width="500" height="400" />
-              <img src="{{ ResultPicture.result2.url }}"width="500" height="400">
-            {% else %}
-              <div style="text-align: center;" class="col-sm-12"> 
-              <img src="{{ ResultPicture.result1.url }}" width="500" height="400" />
+          <style>
+          .responsive {
+              width: 40%;
+              height: auto;
+          }
+          </style>
+        <br>
+         &nbsp; &nbsp; &nbsp;<a href="/history/"> < < Go Back </a>
+        
+        {% for ResultPicture in query_group %}
+          <div style="text-align: center;" class="col-sm-12">
 
-              {% endif %}
+            <h2 class="h4" ><STRONG>{{ ResultPicture.fecha }}</STRONG></h2>     
+          </div>
+          <div class="col-sm-12" >
+            {% if ResultPicture.result2.url != "/media/None" %}
+              <div style="text-align: center;"> 
+                <img src="{{ ResultPicture.result1.url }}" class="responsive"  />
+                <img src="{{ ResultPicture.result1.url }}" class="responsive" >
+              </div>
+
+          {% else %}
+            <div style="text-align: center;" > 
+              <img src="{{ ResultPicture.result1.url }}" class="responsive"/>    
             </div>
-            <div >
-            <div style="text-align: left;">
-              <table >
+           {% endif %}
+        </div>
+         
+            <div style="overflow-x:auto; text-align: center;">
+              <table style="display: inline-block; vertical-align: top;">
                 <thead>  
                   <tr>
                     <th align="left"><STRONG>ID</STRONG></th>
@@ -118,7 +123,7 @@
                 </tbody>
               </table>
               
-              <table >
+              <table style="display: inline-block; vertical-align: top;">
                 <thead>  
                   <tr>
                     <th align="left"><STRONG>Not Attended</STRONG></th>
@@ -130,32 +135,15 @@
                   </tr>
                 </tbody>
               </table>
+              <h1 class="h4"><STRONG>Assistance ratio:{{ ResultPicture.ratio }} </STRONG> </h1>
+
             </div>
-            </div>
-            <a href="{% url 'editlist' ResultPicture.fecha %}">Edit Attendance  </a>
+            &nbsp; &nbsp; &nbsp;<a href="{% url 'editlist' ResultPicture.fecha %}">Edit Attendance  </a>
 
 
           {% endfor %}
       </body>
-          </body>
 
-
-
-          
-          <!-- Page Footer-->
-          <footer class="main-footer">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-sm-6">
-                  <p>SmartAttendance &copy; 2018</p>
-                </div>
-                <div class="col-sm-6 text-right">
-                  <p>Design by <a href="https://bootstrapious.com/admin-templates" class="external">Bootstrapious</a></p>
-                  <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
-                </div>
-              </div>
-            </div>
-          </footer>
         </div>
       </div>
     </div>

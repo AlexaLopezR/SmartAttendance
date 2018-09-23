@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
 from django.conf import settings
 import pfapp.models
 
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('picture1', models.ImageField(default=b'default.jpg', upload_to=b'pfapp/images/')),
-                ('picture2', models.ImageField(default=b'default.jpg', upload_to=b'pfapp/images/')),
+                ('picture2', models.ImageField(null=True, upload_to=b'pfapp/images/')),
             ],
         ),
         migrations.CreateModel(

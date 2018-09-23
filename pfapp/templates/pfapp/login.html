@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>SmartAttendace</title>
+    <title>SmartAttendance</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="robots" content="all,follow">
@@ -33,12 +33,13 @@
           <div class="row">
             <!-- Logo & Information Panel-->
             <div class="col-lg-6">
-              <div class="info d-flex align-items-center">
-                <div class="content">
+              <div class="info d-flex align-items-center" style="background: #2980b9 ">
+                <div class="content" >
                   <div class="logo">
-                    <h1>Welcome to SmartAttendance</h1>
+                    
+                    <h1 style="font-size:4vw; min-width: 50%; min-height: 50%">Welcome to SmartAttendance</h1>
                   </div>
-                  <p>The new way to keep track of your meetings.</p>
+                  <p style="font-size:2vw;">The new way to keep track of your meetings.</p>
                 </div>
               </div>
             </div>
@@ -47,15 +48,21 @@
               <div class="form d-flex align-items-center">
                 <div class="content">
                   <form method="post">
-                    <small>*If you are already registered, sign in </small>
-                    <div class="prueba_clase">
-                    {% csrf_token %}
-		    </div>
-		    <div class="Prueba_2">
-                    {{ form.as_p }}
-		    </div>
+                    <small >*If you are already registered, sign in </small>
+                    <br>
+                    <br>
+                    <div>
+                      {% load widget_tweaks %}
+
+                      {% csrf_token %} 
+                  
+                      <p>Username:&emsp;{{ form.username|add_class:"form-control-input"  }} </p>
+                      <p>Password:&emsp; {{ form.password|add_class:"form-control-input"  }} </p>
+		                </div>
+                    <br>
                     <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Log in</button>
-                  </form><a href="#" class="forgot-pass">Forgot your password?</a><br><small>Don't have an account? </small><a href="/register" class="signup"> Sign up ></a>
+                  </form>
+                 <br><small>Don't have an account? </small><a href="/register" class="signup"> Sign up ></a>
                 </div>
               </div>
             </div>
@@ -80,5 +87,7 @@
         if ('{{message}}'==1){
             alert('Registro exitoso. Inicie sesión');
         }
-       
+  
  </script>
+
+

@@ -30,14 +30,9 @@
     <div class="page">
       <!-- Main Navbar-->
       <header class="header">
-        <nav class="navbar">
+        <nav class="navbar"  style="background: #000">
           <!-- Search Box-->
-          <div class="search-box">
-            <button class="dismiss"><i class="icon-close"></i></button>
-            <form id="searchForm" action="#" role="search">
-              <input type="search" placeholder="What are you looking for..." class="form-control">
-            </form>
-          </div>
+          
           <div class="container-fluid">
             <div class="navbar-holder d-flex align-items-center justify-content-between">
               <!-- Navbar Header-->
@@ -57,13 +52,13 @@
           </div>
         </nav>
       </header>
-      <div class="page-content d-flex align-items-stretch"> 
+      <div class="page-content d-flex align-items-stretch" style="background: #fff"> 
         <!-- Side Navbar -->
         <nav class="side-navbar">
           <!-- Sidebar Header-->
           <div class="sidebar-header d-flex align-items-center">
-            <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
-            <div class="title">
+            <div class="avatar"><img src="/media/elephant.png" alt="..." class="img-fluid rounded-circle"></div>
+            <div class="title" style="background: #fff">
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
@@ -75,9 +70,9 @@
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
-          <header class="page-header">
+          <header class="page-header"  style="background: #2980b9">
             <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="fas fa-users"></i>Groups</h2>
+              <h2 class="no-margin-bottom" style="color: #fff"><i class="fas fa-users"></i>Groups</h2>
             </div>
           </header>
 
@@ -87,8 +82,8 @@
           <style type="text/css">.horizontal { display: inline}</style>
             <dl>
               <ul>
-               <li class="horizontal"> <a href="/newgroup/"> <button style= "width: 100%; height: 100%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Add group manually</button></a> </li>
-                <li class="horizontal"> <a href="/newgroupexcel/"> <button style= "width: 100%; height: 100%;  background-color: #99CCFF"" type="submit" name="registerSubmit" class="btn btn-primary"><i class="far fa-plus-square"></i>Add group from file</button></a> </li>
+               <li class="horizontal"> <a href="/newgroup/"> <button style= "width: 100%;  background-color: #99CCFF" type="submit" name="registerSubmit" class="btn"><i class="far fa-plus-square"></i>Add group manually</button></a> </li>
+                <li class="horizontal"> <a href="/newgroupexcel/"> <button style= "width: 100%;   background-color: #99CCFF" type="submit" name="registerSubmit" class="btn"><i class="far fa-plus-square"></i>Add group from file</button></a> </li>
               </ul>
             </dl>
           </div> 
@@ -99,7 +94,7 @@
                    {% for group in object_list %}
                     <br>
                     <dt><a href="{% url 'detail' group.id %}">
-                       <button style= "width: 300px; height: 100px" type="submit" name="registerSubmit" class="btn btn-primary"><i class="fas fa-users"></i>{{ group.group }} </button></a>
+                       <button style= "width: 300%;  min-width: 50px; min-height: 50px" type="submit" name="registerSubmit" class="btn btn-primary"><i class="fas fa-users"></i>{{ group.group }} </button></a>
                     </dt>
                     <dt>&nbsp; &nbsp; &nbsp; </dt> 
                   {% endfor %}
@@ -109,21 +104,8 @@
             </div>
          
 
-
           <!-- Page Footer-->
-          <footer class="main-footer">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-sm-6">
-                  <p>SmartAttendance &copy; 2018</p>
-                </div>
-                <div class="col-sm-6 text-right">
-                  <p>Design by <a href="https://bootstrapious.com/admin-templates" class="external">Bootstrapious</a></p>
-                  <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
-                </div>
-              </div>
-            </div>
-          </footer>
+         
         </div>
       </div>
     </div>

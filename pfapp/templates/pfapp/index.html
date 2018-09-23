@@ -29,19 +29,14 @@
   <body>
     <div class="page">
       <!-- Main Navbar-->
-      <header class="header">
-        <nav class="navbar">
+      <header class="header" >
+        <nav class="navbar" style="background: #000">
           <!-- Search Box-->
-          <div class="search-box">
-            <button class="dismiss"><i class="icon-close"></i></button>
-            <form id="searchForm" action="#" role="search">
-              <input type="search" placeholder="What are you looking for..." class="form-control">
-            </form>
-          </div>
-          <div class="container-fluid">
-            <div class="navbar-holder d-flex align-items-center justify-content-between">
+        
+          <div class="container-fluid" >
+            <div class="navbar-holder d-flex align-items-center justify-content-between" >
               <!-- Navbar Header-->
-              <div class="navbar-header">
+              <div class="navbar-header" >
                 <!-- Navbar Brand --><a href="index.html" class="navbar-brand">
                   <div class="brand-text brand-big"><span>Smart</span><strong>Attendance</strong></div>
                   <div class="brand-text brand-small"><strong>SA</strong></div></a>
@@ -58,13 +53,13 @@
           </div>
         </nav>
       </header>
-      <div class="page-content d-flex align-items-stretch"> 
+      <div class="page-content d-flex align-items-stretch" style="background: #fff"> 
         <!-- Side Navbar -->
-        <nav class="side-navbar">
+        <nav class="side-navbar" >
           <!-- Sidebar Header-->
           <div class="sidebar-header d-flex align-items-center">
-            <div class="avatar"><img src="img/avatar-1.jpg" alt="..." class="img-fluid rounded-circle"></div>
-            <div class="title">
+            <div class="avatar"><img src="/media/elephant.png" alt="..." class="img-fluid rounded-circle"></div>
+            <div class="title" style="background: #fff">
               <h1 class="h4">{{ user.get_username }}</h1>
             </div>
           </div>
@@ -77,52 +72,50 @@
         </nav>
         <div class="content-inner">
           <!-- Page Header-->
-          <header class="page-header">
-            <div class="container-fluid">
-              <h2 class="no-margin-bottom"><i class="fas fa-user"></i>User Profile</h2>
+          <header class="page-header" style="background: #2980b9">
+            <div class="container-fluid" >
+              <h2 class="no-margin-bottom" style="color: #fff"><i class="fas fa-user"></i>User Profile</h2>
             </div>
           </header>
+          <br>
+          <br>
+        <div class="col-sm-6">
+          <style>
+            table {
+              border-collapse: collapse;
+              border-spacing: 0;
+              width: 90%;}
+
+          th, td {
+              text-align: center;
+              padding: 8px;
+                        }
+          tr:nth-child(odd){background: transparent;}
+          </style>
+        </div >
+        <div style="overflow-x:auto;" align="center">
+          <table >
+            <thead>
         
-        <div class="container">
-          <table class="table" width="100%" border="0" cellpadding="0" cellspacing="0">
-          <thead>
-      
-            <tr>
-              <th align="center"><STRONG>User Name</STRONG></th>
-              <th align="center"><STRONG>E-mail</STRONG></th>
-              <th align="center"><STRONG>Full Name </STRONG></th>
-              <th align="center"><STRONG> </STRONG></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="info">
-              <td>{{ user.get_username }}</td>
-              <td>{{ user.email }}</td>
-              <td>{{ user.first_name }} {{ user.last_name }}</td>
-              <td align="enter"> <a href="/edit/"> <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Edit</button></a></td>
-
-
-                   
-            </tr>
-      
-           </tbody>
+              <tr>
+                <th align="center"><STRONG>User Name</STRONG></th>
+                <th align="center"><STRONG>E-mail</STRONG></th>
+                <th align="center"><STRONG>Full Name </STRONG></th>
+                <th align="center"><STRONG> </STRONG></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr >
+                <td >{{ user.get_username }}</td>
+                <td  >{{ user.email }}</td>
+                <td  >{{ user.first_name }} {{ user.last_name }}</td>
+                <td align="enter"> <a href="/edit/"> <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary" style="background: #2980b9">Edit</button></a></td>
+              </tr>
+            </tbody>
           </table>
         </div>
           
-          <!-- Page Footer-->
-          <footer class="main-footer">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-sm-6">
-                  <p>SmartAttendance &copy; 2018</p>
-                </div>
-                <div class="col-sm-6 text-right">
-                  <p>Design by <a href="https://bootstrapious.com/admin-templates" class="external">Bootstrapious</a></p>
-                  <!-- Please do not remove the backlink to us unless you support further theme's development at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
-                </div>
-              </div>
-            </div>
-          </footer>
+         
         </div>
       </div>
     </div>

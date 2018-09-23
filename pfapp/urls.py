@@ -1,10 +1,12 @@
 from django.conf.urls import url
 from . import views
+from forms import LoginForm
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.contrib.auth.views import login
+
 
 urlpatterns= [
     url(r'^profile/$',views.userprofile,name='profile'),
@@ -18,7 +20,7 @@ urlpatterns= [
     url(r'^pickColumns/$',views.pickcolumns,name='pickcolumns'),
     url(r'^formset_excel/$',views.formset_excel.as_view(),name='formset_excel'),
 
-    url(r'^$', login, {'template_name': 'pfapp/login.html'}, name='login'),
+    url(r'^$', login, {'template_name': 'pfapp/login.html', }, name='login'),
     url(r'^edit/password/$',views.change_password,name='changepassword'),
     url(r'^prueba/$',views.codificacion ,name='photo'),
     url(r'^newCod/$',views.codificacionEdit ,name='editCod'),

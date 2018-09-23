@@ -270,16 +270,20 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
 		# See if the face is a match for the known face(s)
 			matches = face_recognition.face_distance(known_face_encodings, face_encoding)
+			print(matches)
 			name = "Unknown"
 			ids_str="Unknown"
 			if(min(matches)<=tol):
 				mindispos = matches.tolist().index(min(matches))
 				name = known_face_names[mindispos]
-				name_list.append(name)
-				ids=ids+1
-				ids_str=str(ids)
-				idassisted.append(ids_str)
-				ids_list.append(ids)
+				if(name in name_list):
+					ids_str=str(name_list.index(name)+1)
+				else:
+					name_list.append(name)
+					ids=ids+1
+					ids_str=str(ids)
+					ids_list.append(ids)
+					idassisted.append(ids_str)
 			else:
 				uf=uf+1
 				unknown_list.append(name+str(uf))
@@ -306,7 +310,9 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		print(name_list)
 		flag=0
 	for p in UploadPhoto.objects.raw('SELECT id, picture2 FROM pfapp_uploadphoto WHERE  id=( SELECT MAX(id) FROM pfapp_uploadphoto )'):
-		if(p.picture2 != None):
+		if(p.picture2 != ""):
+			print("down")
+			print(str(p.picture2))
 			flag=1
 			dire1=os.path.join('/home/ubuntu/SmartAttendance/static/media/', str(p.picture2))
 			print(dire1)
@@ -330,8 +336,8 @@ def attendanceGenerator(request): #Vista para generar asistencia
 
 			#  Create a Pillow ImageDraw Draw instance to draw with
 			draw = ImageDraw.Draw(pil_image)
-			
-			
+			uf=0
+			unknown_list2=[]
 			# Loop through each face found in the unknown image
 			for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
 			# See if the face is a match for the known face(s)
@@ -352,7 +358,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 						print("lalal")
 				else:
 					uf=uf+1
-					unknown_list.append(name+str(uf))
+					unknown_list2.append(name+str(uf))
 					ids_str="U"+str(uf)
 					
 					
@@ -377,10 +383,17 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			fileroute4="/media/resultimage2"+date+".png"
 
        	#(pk,class_dir,x[p])
-		feche=datetime.datetime.today()
+		feche=time.asctime(time.localtime(time.time()))
 		print(name_list)
 		missing=set(james)-set(name_list)
 		missing=list(missing)
+		if (len(unknown_list)<len(unknown_list2)):
+			unknown_list3=unknown_list
+		else:
+			if(len(unknown_list)>len(unknown_list2)):
+				unknown_list3=unknown_list2
+			else:
+				unknown_list3=unknown_list
 		#print(ids_list)
 		#print(missing)
 		#print(len(missing))
@@ -396,7 +409,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				print(percent)
 			else:
 				num=ids
-				den=ids+len(missing)
+				den=ids+len(missing)+len(unknown_list3)
 				percent=(num*100)/den
 				percent=str(percent)+"%"
 				print(percent)
@@ -409,19 +422,19 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		if(flag == 1):
 			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 			cursor = bd.cursor()
-			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted) values ('%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, fileroute4 ,grupo_selec, feche, name_lists, missings, ids_lists))
+			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted, ratio) values ('%s','%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, fileroute4 ,grupo_selec, feche, name_lists, missings, ids_lists, percent))
 			bd.commit()
-			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent, 'flag':flag}
+			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute2':fileroute4 ,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list3, 'percent':percent, 'flag':flag}
 		else:
 			bd= MySQLdb.connect("127.0.0.1","root", "123pf","PF")
 			cursor = bd.cursor()
-			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted) values ('%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, None ,grupo_selec, feche, name_lists, missings, ids_lists))
+			cursor.execute("INSERT into pfapp_resultpicture (result1, result2, idgroup_id, fecha, assisted, missing, idassisted, ratio) values ('%s','%s','%s','%s','%s','%s','%s','%s')" %  (fileroute2, None ,grupo_selec, feche, name_lists, missings, ids_lists, percent))
 			bd.commit()
-			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list, 'percent':percent, 'flag':flag}
+			context={'groupid': grupo_selec, 'names':name_list, 'missing':missing,'fileroute':fileroute2, 'ids':ids_list, 'unknowns':unknown_list3, 'percent':percent, 'flag':flag}
 		query_group=Group.objects.filter(id=grupo_selec)
 		print(query_group[0])
-		messageassisted= "Se confirma su asistencia a la clase: " + str(query_group[0]) + ", en la fecha: " + str(feche) 
-		messagemissed= "Se confirma su inasistencia a la clase: " + str(query_group[0]) + ", en la fecha: " + str(feche) + " . Si esta información no es correcta, favor acercarse al administrador del grupo" 
+		messageassisted= "Se confirma su asistencia al grupo: " + str(query_group[0]) + ", en la fecha: " + str(feche) 
+		messagemissed= "Se confirma su inasistencia al grupo: " + str(query_group[0]) + ", en la fecha: " + str(feche) + " . Si esta información no es correcta, favor acercarse al administrador del grupo" 
 
 		print("nombre grupo")
 	for a in name_list:
@@ -430,7 +443,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Asistencia a clase', messageassisted, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			send_mail('Asistencia a grupo', messageassisted, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 
 	for a in missing:
 		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
@@ -438,7 +451,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Inasistencia a clase', 'Se confirma su inasistencia a la clase de hoy. Si esta informacion no es correcta, contacte a su profesor correspondiente', 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			send_mail('Inasistencia a grupo',messagemissed, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 	return render(request, 'pfapp/result.html', context)
 
 def history(request):
@@ -446,7 +459,7 @@ def history(request):
 	grupo_id= grupo_selec
 	query_group=ResultPicture.objects.filter(idgroup=grupo_selec)
 	context={
-	'query_group':query_group
+	'query_group':query_group, 'grupo_selec':grupo_id
 	}
 	return render(request,'pfapp/history.html',context)
 	
@@ -757,9 +770,9 @@ def editList(request, fecha): #Vista para editar la lista de asistencia
 				if (checked[n]==attended[m]):
 					newid=m+1
 					newids.append(str(newid))
-		
-		for n in range(abs(len(checked)-len(attended))):
-			newids.append("M")
+		if(len(checked)>len(newids)):
+			for n in range(abs(len(checked)-len(attended))):
+				newids.append("M")
 				
 		print(newids)
 		print(newmissing)

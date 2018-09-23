@@ -36,7 +36,7 @@
               <div class="info d-flex align-items-center">
                 <div class="content">
                   <div class="logo">
-                    <h1>Join to the new way of making the attendance record </h1>
+                    <h1 style="font-size:5vw; min-width: 50%; min-height: 50%">Join to the new way of making the attendance record </h1>
                   </div>
                 </div>
               </div>
@@ -48,8 +48,16 @@
                     <div class="form-group">
                       <form method="post" enctype="multipart/form-data">
                         <div class="form-group" align="center-justify"  >
+                          {% load widget_tweaks %}
+
                           {% csrf_token %}
-                          {{ form.as_p }}
+                          <h5>Username:</h5>{{ form.username|add_class:"form-control-input"  }}
+                          <h5>First Name:</h5>{{ form.first_name|add_class:"form-control-input"  }}
+                          <h5>Last Name:</h5>{{ form.last_name|add_class:"form-control-input"  }}
+                          <h5>E-mail:</h5>{{ form.email|add_class:"form-control-input"  }}
+                          <h5>Password</h5>{{ form.password1|add_class:"form-control-input"  }}
+                          <h5>Password confirmation</h5>{{ form.password2|add_class:"form-control-input"  }}
+                          <br> <br>
                         <button id="regidter" type="submit" name="registerSubmit" class="btn btn-primary">Sign up</button>
                         </div>
                       </form> 

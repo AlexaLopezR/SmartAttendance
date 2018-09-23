@@ -52,3 +52,4 @@ class ResultPicture(models.Model):
 	missing=models.CharField(max_length=1000)
 	fecha=models.CharField(max_length=1000)
 	idassisted=models.CharField(max_length=1000)
+	ratio=models.CharField(max_length=10, null=True)

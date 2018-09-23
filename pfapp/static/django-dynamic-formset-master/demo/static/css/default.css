@@ -164,7 +164,7 @@ a:hover {
 
 #content {
 	float: left;
-	width: 590px;
+	width: 50%;
 }
 
 .post {
@@ -262,17 +262,14 @@ a.download {
 /* Footer */
 
 #footer {
-	clear: both;
 	margin: 0px;
 	height: 80px;
-	background: #F2F2F2 url(../images/bg02.jpg) repeat-x left top;
 }
 
 #footer p {
 	padding: 20px 0;
 	text-align: center;
 	font-size: smaller;
-	color: #717171;
 }
 
 /* Forms */
