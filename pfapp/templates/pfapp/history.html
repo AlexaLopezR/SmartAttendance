@@ -88,7 +88,7 @@
           <h4><STRONG>*Note: M = Modified record</STRONG></h4>
         </div>
           
-          {% for ResultPicture in query_group %}
+          {% for ResultPicture in query_group reversed %}
             <div style="text-align: left;" class="col-sm-12">
                   <a href="{% url 'historydetail' ResultPicture.fecha %}">{{ ResultPicture.fecha }}</a>
                 
@@ -96,6 +96,7 @@
            
             <div class="col-sm-12">
             <div style="text-align: left;">
+             <h1 class="h4"><STRONG>Assistance ratio:{{ ResultPicture.ratio }} </STRONG> </h1>
               <table >
                 <thead>  
                   <tr>
@@ -125,7 +126,6 @@
               </table>
             </div>
             </div>
-            <h1 class="h4"><STRONG>Assistance ratio:{{ ResultPicture.ratio }} </STRONG> </h1>
 
           {% endfor %}
       </body>

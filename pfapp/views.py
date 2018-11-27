@@ -216,6 +216,8 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	A=A.replace(',,,',',')
 	A=A.replace(',,',',')
 	A=A.replace(',,',',')
+	print("lo de abajo es A")
+	print(A)
 	print("Tipo de A")
 	A=eval(A)
 	A = [np.array(element) for element in A]
@@ -235,7 +237,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 	B=','.join(map(str, B))
 	B=B.split(',')
 	known_face_names=B
-	tol=0.6
+	tol=0.53
 	james=B
 	print(james)
 	print(len(james))
@@ -250,10 +252,10 @@ def attendanceGenerator(request): #Vista para generar asistencia
 		unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada.jpg')
 		height = np.size(unknown_image, 0)
 		width = np.size(unknown_image, 1)
-		if (width<2000 and height<2000):
-			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+		if (width<3000 and height<3000):
+			unknown_image = cv2.resize(unknown_image, (4500, 4000)) 
 		if (width>2200 and height>2200):
-			unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+			unknown_image = cv2.resize(unknown_image, (4500, 4000)) 
 		face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
 		face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 		pil_image = Image.fromarray(unknown_image)
@@ -287,7 +289,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			else:
 				uf=uf+1
 				unknown_list.append(name+str(uf))
-				ids_str="U"+str(uf)
+				ids_str="U"
 				
 				
 		 # Draw a box around the face using the Pillow module
@@ -326,10 +328,10 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			unknown_image = face_recognition.load_image_file('/home/ubuntu/SmartAttendance/static/media/imagenmejorada2.jpg')
 			height = np.size(unknown_image, 0)
 			width = np.size(unknown_image, 1)
-			if (width<2000 and height<2000):
-				unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+			if (width<3000 and height<3000):
+				unknown_image = cv2.resize(unknown_image, (4500, 4000)) 
 			if (width>2200 and height>2200):
-				unknown_image = cv2.resize(unknown_image, (2000, 2000)) 
+				unknown_image = cv2.resize(unknown_image, (4500, 4000)) 
 			face_locations = face_recognition.face_locations(unknown_image, number_of_times_to_upsample=0, model="hog")
 			face_encodings = face_recognition.face_encodings(unknown_image, face_locations)
 			pil_image = Image.fromarray(unknown_image)
@@ -359,7 +361,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 				else:
 					uf=uf+1
 					unknown_list2.append(name+str(uf))
-					ids_str="U"+str(uf)
+					ids_str="U"
 					
 					
 			 # Draw a box around the face using the Pillow module
@@ -383,36 +385,31 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			fileroute4="/media/resultimage2"+date+".png"
 
        	#(pk,class_dir,x[p])
-		feche=time.asctime(time.localtime(time.time()))
+		now = time.localtime(time.time())
+		feche= time.strftime("%a %b %d %Y, %H:%M", now)
 		print(name_list)
 		missing=set(james)-set(name_list)
 		missing=list(missing)
-		if (len(unknown_list)<len(unknown_list2)):
-			unknown_list3=unknown_list
-		else:
-			if(len(unknown_list)>len(unknown_list2)):
-				unknown_list3=unknown_list2
-			else:
+		if(flag ==1):
+			if (len(unknown_list)<len(unknown_list2)):
 				unknown_list3=unknown_list
-		#print(ids_list)
-		#print(missing)
-		#print(len(missing))
-		#print(ids)
+			else:
+				if(len(unknown_list)>len(unknown_list2)):
+					unknown_list3=unknown_list2
+				else:
+					unknown_list3=unknown_list
+		else:
+			unknown_list3=unknown_list
 		if ids==0:
 			percent=0
 			percent=str(percent)+"%"
 			print(percent)
 		else:
-			if len(missing)==0:
-				percent=100
-				percent=str(percent)+"%"
-				print(percent)
-			else:
-				num=ids
-				den=ids+len(missing)+len(unknown_list3)
-				percent=(num*100)/den
-				percent=str(percent)+"%"
-				print(percent)
+			num=ids
+			den=ids+len(missing)
+			percent=(num*100)/den
+			percent=str(percent)+"%"
+			print(percent)
 		missings = "\n".join(missing)
 		name_lists = "\n".join(name_list)
 		ids_lists = "\n".join(idassisted)
@@ -443,7 +440,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Asistencia a grupo', messageassisted, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			#send_mail('Asistencia a grupo', messageassisted, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 
 	for a in missing:
 		for n in GroupMembers.objects.raw('SELECT id, correoint FROM pfapp_groupmembers WHERE nombreint = %s', [a]):
@@ -451,7 +448,7 @@ def attendanceGenerator(request): #Vista para generar asistencia
 			emailassist.append(n.correoint)	
 			print(emailassist[0])
 			print(type(emailassist))
-			send_mail('Inasistencia a grupo',messagemissed, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
+			#send_mail('Inasistencia a grupo',messagemissed, 'smartattendance2018@gmail.com',emailassist, fail_silently=False)
 	return render(request, 'pfapp/result.html', context)
 
 def history(request):
@@ -778,6 +775,11 @@ def editList(request, fecha): #Vista para editar la lista de asistencia
 		print(newmissing)
 		newmissing="\n".join(newmissing)
 		newids="\n".join(newids)
+		num=len(newids)
+		den=len(newids)+len(newmissing)
+		percent=(num*100)/den
+		percent=str(percent)+"%"
+		ResultPicture.objects.filter(fecha =fecha).update(ratio =percent)
 		ResultPicture.objects.filter(fecha =fecha).update(missing =newmissing)
 		checked ="\n".join(checked)
 		ResultPicture.objects.filter(fecha =fecha).update(idassisted =newids)
